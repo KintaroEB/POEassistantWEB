@@ -542,19 +542,6 @@
                 .ba-hint { animation: none; }
             }
 
-            .qol {
-                display: grid;
-                grid-template-columns: 240px 1fr;
-                gap: 34px;
-                align-items: center;
-            }
-            .qol img {
-                width: 100%;
-                border-radius: 50%;
-                border: 1px solid var(--border-accent);
-                box-shadow: 0 0 40px -10px var(--accent-glow);
-            }
-
             /* =========================================================
                PLACEHOLDER (work-in-progress) panels
                ========================================================= */
@@ -1059,8 +1046,6 @@
             }
 
             @media (max-width: 640px) {
-                .qol { grid-template-columns: 1fr; text-align: center; }
-                .qol img { max-width: 200px; margin: 0 auto; }
                 .section, .hero { padding-left: 22px; padding-right: 22px; }
                 .topbar-discord span { display: none; }
             }
@@ -1201,13 +1186,8 @@
 
                     <!-- quality of life -->
                     <div class="section">
-                        <div class="qol">
-                            <img src="assets/gui.png" alt="POE Assistant" />
-                            <div>
-                                <h2 class="section-title" id="quality-title"><span class="bar"></span>Quality of Life For Everyone!</h2>
-                                <p id="quality-text" style="color:var(--muted);font-size:1.05rem;">We have over 18000 users — join the community and give it a try!</p>
-                            </div>
-                        </div>
+                        <h2 class="section-title" id="quality-title"><span class="bar"></span>Quality of Life For Everyone!</h2>
+                        <p id="quality-text" style="color:var(--muted);font-size:1.05rem;">We have over 18000 users — join the community and give it a try!</p>
                     </div>
                 </div>
             </section>
