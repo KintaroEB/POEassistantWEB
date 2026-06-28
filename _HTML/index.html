@@ -623,6 +623,222 @@
             }
 
             /* =========================================================
+               TUTORIAL PANELS + SLIDESHOW
+               ========================================================= */
+            .tut-head { padding: 34px 40px 4px; }
+            .tut-intro {
+                color: var(--muted);
+                font-size: 1.05rem;
+                line-height: 1.6;
+                margin: 0;
+                max-width: 720px;
+            }
+            .tut-section { padding: 26px 40px 40px; }
+            .tut-section + .tut-section { border-top: 1px solid var(--border); }
+            .tut-section-title {
+                font-family: var(--font-head);
+                font-weight: 700;
+                font-size: 1.2rem;
+                letter-spacing: 0.5px;
+                color: var(--text);
+                margin: 0 0 18px;
+            }
+
+            .slideshow { max-width: 980px; margin: 0 auto; }
+
+            .ss-stage {
+                position: relative;
+                aspect-ratio: 16 / 9;
+                background:
+                    radial-gradient(120% 90% at 50% 0%, rgba(58,44,107,0.30), transparent 70%),
+                    var(--bg-0);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                overflow: hidden;
+                outline: none;
+            }
+            .ss-stage:focus-visible {
+                border-color: var(--border-accent);
+                box-shadow: 0 0 0 2px var(--border-accent);
+            }
+            .ss-img {
+                position: absolute;
+                inset: 0;
+                width: 100%; height: 100%;
+                object-fit: contain;
+                opacity: 0;
+                transition: opacity 0.4s ease;
+                pointer-events: none;
+            }
+            .ss-img.active { opacity: 1; }
+
+            .ss-counter {
+                position: absolute;
+                top: 12px; right: 12px;
+                z-index: 5;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.74rem;
+                letter-spacing: 1px;
+                color: var(--muted);
+                background: rgba(11, 9, 19, 0.72);
+                border: 1px solid var(--border);
+                padding: 5px 11px;
+                border-radius: 999px;
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+            }
+            .ss-counter b { color: var(--accent-2); }
+
+            .ss-nav {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 5;
+                width: 44px; height: 44px;
+                display: grid;
+                place-items: center;
+                border-radius: 50%;
+                color: var(--text);
+                background: rgba(11, 9, 19, 0.55);
+                border: 1px solid var(--border);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                cursor: pointer;
+                transition: all 0.18s ease;
+            }
+            .ss-nav:hover {
+                color: #1a0e00;
+                background: linear-gradient(135deg, var(--accent), #ff5e00);
+                border-color: transparent;
+                box-shadow: 0 0 18px var(--accent-glow);
+            }
+            .ss-prev { left: 12px; }
+            .ss-next { right: 12px; }
+
+            .ss-dots {
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                margin-top: 16px;
+            }
+            .ss-dot {
+                width: 9px; height: 9px;
+                padding: 0;
+                border-radius: 50%;
+                background: var(--bg-4);
+                border: 1px solid var(--border);
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .ss-dot:hover { background: var(--purple); }
+            .ss-dot.active {
+                width: 24px;
+                border-radius: 999px;
+                background: linear-gradient(90deg, var(--accent), var(--accent-2));
+                border-color: transparent;
+                box-shadow: 0 0 10px var(--accent-glow);
+            }
+
+            .ss-empty {
+                aspect-ratio: 16 / 9;
+                display: grid;
+                place-items: center;
+                text-align: center;
+                padding: 24px;
+                color: var(--muted);
+                background: var(--bg-0);
+                border: 1px dashed var(--border-accent);
+                border-radius: var(--radius);
+                line-height: 1.7;
+            }
+            .ss-empty i { display: block; font-size: 2.1rem; color: var(--accent); opacity: 0.75; margin-bottom: 12px; }
+            .ss-empty code {
+                color: var(--accent-2);
+                background: var(--accent-soft);
+                padding: 2px 7px;
+                border-radius: 6px;
+                font-size: 0.9em;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .ss-img { transition: opacity 0.15s ease; }
+            }
+
+            /* how-to steps */
+            .howto-steps {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                max-width: 820px;
+                display: grid;
+                gap: 12px;
+            }
+            .howto-steps li {
+                position: relative;
+                padding-left: 24px;
+                line-height: 1.6;
+                color: var(--text);
+            }
+            .howto-steps li::before {
+                content: "-";
+                position: absolute;
+                left: 4px; top: 0;
+                color: var(--accent);
+                font-weight: 700;
+            }
+
+            /* UI reference token (kept properly cased + accented) */
+            .ui { color: var(--accent-2); font-weight: 600; }
+
+            /* inline links inside tutorials */
+            .tut a.lnk {
+                color: var(--accent-2);
+                text-decoration: none;
+                font-weight: 600;
+                border-bottom: 1px solid var(--border-accent);
+                transition: color 0.15s ease, border-color 0.15s ease;
+            }
+            .tut a.lnk:hover { color: var(--accent); border-color: var(--accent); }
+            .tut a.lnk i { font-size: 0.82em; margin-right: 4px; }
+
+            /* known issues */
+            .issues-title { margin-top: 36px; display: flex; align-items: center; gap: 10px; }
+            .issues-title i { color: var(--accent); font-size: 0.95em; }
+            .issues {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                max-width: 820px;
+                display: grid;
+                gap: 14px;
+            }
+            .issue {
+                background: var(--bg-1);
+                border: 1px solid var(--border);
+                border-left: 3px solid var(--accent);
+                border-radius: var(--radius-sm);
+                padding: 14px 16px;
+            }
+            .issue-problem { color: var(--text); line-height: 1.55; }
+            .issue-solution {
+                position: relative;
+                margin-top: 9px;
+                padding-left: 22px;
+                color: var(--muted);
+                line-height: 1.55;
+            }
+            .issue-solution::before {
+                content: "\2192";
+                position: absolute;
+                left: 0; top: 0;
+                color: var(--accent);
+                font-weight: 700;
+            }
+            .issue-solution b { color: var(--accent-2); font-weight: 600; }
+
+            /* =========================================================
                FOOTER
                ========================================================= */
             footer {
@@ -675,6 +891,9 @@
                     <span class="tab-sep-label"><i class="fa-solid fa-graduation-cap"></i> Tutorials</span>
                 </span>
 
+                <button class="tab tab-tut" data-tab="updater" role="tab">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Assistant Updater
+                </button>
                 <button class="tab tab-tut" data-tab="assistant" role="tab">
                     <i class="fa-solid fa-robot"></i> Assistant App
                 </button>
@@ -772,6 +991,43 @@
                 </div>
             </section>
 
+            <!-- ===================== ASSISTANT UPDATER (tutorial) ===================== -->
+            <section class="panel" id="panel-updater" role="tabpanel">
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Tutorial</span>
+                        <h2 class="section-title"><span class="bar"></span>Assistant Updater</h2>
+                        <p class="tut-intro">get the app downloaded — and kept up to date — with a single click.</p>
+                    </div>
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/assistant-updater"></div>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">how to</h3>
+                        <ul class="howto-steps">
+                            <li>must have dependency: <a class="lnk" href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.28-windows-x64-installer" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i>.NET Desktop Runtime 8.0.28 (x64)</a></li>
+                            <li>get the updater here: <a class="lnk" href="https://github.com/KintaroEB/POE-2-Assistance/raw/refs/heads/main/updater.zip"><i class="fa-solid fa-download"></i>updater.zip</a></li>
+                            <li>start and select a folder (it must be empty)</li>
+                            <li>click <span class="ui">Install</span> and read the warning (you must follow its advice or it will not work)</li>
+                            <li>that's it, done — a shortcut to <span class="ui">Assistant</span> is on your desktop</li>
+                        </ul>
+
+                        <h3 class="tut-section-title issues-title"><i class="fa-solid fa-triangle-exclamation"></i> known issues</h3>
+                        <ul class="issues">
+                            <li class="issue">
+                                <div class="issue-problem">using <span class="ui">OneDrive</span> with your desktop included will fail to produce the shortcut</div>
+                                <div class="issue-solution"><b>solution:</b> stop using <span class="ui">OneDrive</span> at all, or get your desktop finally out of it</div>
+                            </li>
+                            <li class="issue">
+                                <div class="issue-problem">extraction issues come from your antivirus</div>
+                                <div class="issue-solution"><b>solution:</b> do not ignore the warning message and exclude the install folder fully</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
             <!-- ===================== PLACEHOLDER PANELS ===================== -->
             <section class="panel" id="panel-assistant" role="tabpanel">
                 <div class="card placeholder">
@@ -840,6 +1096,83 @@
                 ba.addEventListener("click", toggleBA);
                 ba.addEventListener("keydown", (e) => {
                     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleBA(); }
+                });
+            }
+
+            /* ---------- tutorial slideshows (auto-load numbered images) ---------- */
+            function probeImage(base, i, exts) {
+                return new Promise(resolve => {
+                    let k = 0;
+                    const next = () => {
+                        if (k >= exts.length) return resolve(null);
+                        const img = new Image();
+                        img.onload = () => resolve(img.src);
+                        img.onerror = () => { k++; next(); };
+                        img.src = base + "/" + i + "." + exts[k];
+                    };
+                    next();
+                });
+            }
+
+            async function initSlideshow(el) {
+                const base = el.dataset.src.replace(/\/+$/, "");
+                const exts = (el.dataset.ext || "png,jpg,jpeg").split(",").map(s => s.trim());
+                const srcs = [];
+                for (let i = 1; i <= 60; i++) {
+                    const src = await probeImage(base, i, exts);
+                    if (!src) break;        // first gap → stop
+                    srcs.push(src);
+                }
+                if (!srcs.length) {
+                    el.innerHTML = '<div class="ss-empty"><i class="fa-regular fa-images"></i>'
+                        + 'No slides yet — drop numbered screenshots '
+                        + '(<code>1.png</code>, <code>2.png</code>, …) into <code>' + base + '/</code></div>';
+                    return;
+                }
+                renderSlideshow(el, srcs);
+            }
+
+            function renderSlideshow(el, srcs) {
+                let idx = 0;
+                const multi = srcs.length > 1;
+                const layers = srcs.map((s, n) =>
+                    '<img class="ss-img' + (n === 0 ? ' active' : '') + '" src="' + s
+                    + '" alt="Slide ' + (n + 1) + '" draggable="false">').join("");
+                const dots = srcs.map((s, n) =>
+                    '<button class="ss-dot' + (n === 0 ? ' active' : '') + '" data-i="' + n
+                    + '" aria-label="Go to slide ' + (n + 1) + '"></button>').join("");
+
+                el.innerHTML =
+                    '<div class="ss-stage" tabindex="0" aria-roledescription="carousel">'
+                        + layers
+                        + '<span class="ss-counter"><b>1</b> / ' + srcs.length + '</span>'
+                        + (multi ?
+                            '<button class="ss-nav ss-prev" aria-label="Previous slide"><i class="fa-solid fa-chevron-left"></i></button>'
+                          + '<button class="ss-nav ss-next" aria-label="Next slide"><i class="fa-solid fa-chevron-right"></i></button>'
+                          : '')
+                    + '</div>'
+                    + (multi ? '<div class="ss-dots">' + dots + '</div>' : '');
+
+                const imgs = el.querySelectorAll(".ss-img");
+                const dotEls = el.querySelectorAll(".ss-dot");
+                const counter = el.querySelector(".ss-counter b");
+                const stage = el.querySelector(".ss-stage");
+
+                function show(n) {
+                    idx = (n + srcs.length) % srcs.length;
+                    imgs.forEach((im, k) => im.classList.toggle("active", k === idx));
+                    dotEls.forEach((d, k) => d.classList.toggle("active", k === idx));
+                    if (counter) counter.textContent = idx + 1;
+                }
+
+                const next = el.querySelector(".ss-next");
+                const prev = el.querySelector(".ss-prev");
+                if (next) next.addEventListener("click", () => show(idx + 1));
+                if (prev) prev.addEventListener("click", () => show(idx - 1));
+                dotEls.forEach(d => d.addEventListener("click", () => show(parseInt(d.dataset.i, 10))));
+                stage.addEventListener("keydown", (e) => {
+                    if (e.key === "ArrowRight") { e.preventDefault(); show(idx + 1); }
+                    else if (e.key === "ArrowLeft") { e.preventDefault(); show(idx - 1); }
                 });
             }
 
@@ -982,6 +1315,7 @@
                 const saved = localStorage.getItem("activeTab");
                 const valid = saved && document.querySelector('.tab[data-tab="' + saved + '"]');
                 switchTab(valid ? saved : "overview");
+                document.querySelectorAll(".slideshow").forEach(initSlideshow);
             });
         </script>
     </body>
