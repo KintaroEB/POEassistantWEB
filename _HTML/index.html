@@ -1418,11 +1418,76 @@
             </section>
 
             <section class="panel" id="panel-ggpx" role="tabpanel">
-                <div class="card placeholder">
-                    <div class="ph-icon"><i class="fa-solid fa-file-code"></i></div>
-                    <div class="wip-badge">Work in progress</div>
-                    <h2>GGPX Editor</h2>
-                    <p>Tutorials and documentation for the GGPX Editor will live here.</p>
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Tutorial</span>
+                        <h2 class="section-title"><span class="bar"></span>GGPX Editor</h2>
+                        <p class="tut-intro">a tool that patches your poe2 game files — load a preset, or tweak everything skill by skill.</p>
+                    </div>
+
+                    <!-- overview / showcase -->
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/ggpx-basic"></div>
+                        <h3 class="tut-section-title">overview</h3>
+                        <p class="tut-text">load a ready-made preset for a clean, one-click setup — or go granular and enable and disable skills one by one. there are plenty of extra options for anyone who wants to dive deeper.</p>
+                        <ul class="howto-steps">
+                            <li>select your path of exile installaiton folder</li>
+                            <li>load a preset for an instant, proven setup</li>
+                            <li>or enable and disable skills individually for full control</li>
+                            <li>dig into the advanced tabs for visual tweaks, spells, mtx and more</li>
+                        </ul>
+                    </div>
+
+                    <!-- section 1: csd color -->
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/ggpx-csd-color"></div>
+                        <h3 class="tut-section-title"><span class="num">01</span>csd color</h3>
+                        <p class="tut-text">recolor the game's stat text. find a stat, give it a color, and save — handy for making important mods jump out.</p>
+                        <ul class="howto-steps">
+                            <li>pick a language and a CSD file at the top</li>
+                            <li>search the stat text you want (for example <span class="ui">Movement Speed</span>)</li>
+                            <li>choose a color from the palette, or type an RGB value and hit <span class="ui">Use</span></li>
+                            <li>mark the results you want to recolor</li>
+                            <li>click <span class="ui">Save CSD colors</span> to write them into the game</li>
+                            <li><span class="ui">Load preset</span>, <span class="ui">Import</span> and <span class="ui">Export</span> let you reuse and share color sets</li>
+                        </ul>
+                    </div>
+
+                    <!-- section 2: load ggpx -->
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/ggpx-load"></div>
+                        <h3 class="tut-section-title"><span class="num">02</span>load ggpx</h3>
+                        <p class="tut-text">download and load ready-made ggpx packs.</p>
+                        <ul class="howto-steps">
+                            <li>click <span class="ui">Download GGPX PAK</span> to fetch the latest packs</li>
+                            <li>each pack shows up in the list with its own <span class="ui">Load</span> button</li>
+                            <li>click <span class="ui">Load</span> on the one you want to apply it</li>
+                        </ul>
+                    </div>
+
+                    <!-- section 3: rules -->
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/ggpx-rules"></div>
+                        <h3 class="tut-section-title"><span class="num">03</span>rules</h3>
+                        <p class="tut-text">rule files fine-tune what each toggle keeps or removes. they live in a <code>rules</code> folder next to the app and are created automatically on first startup.</p>
+                        <ul class="howto-steps">
+                            <li>open the <span class="ui">RULES</span> tab to see every rule file</li>
+                            <li>click <span class="ui">Edit</span> next to a file to open it in the editor</li>
+                            <li>change what you need, then click <span class="ui">Save</span></li>
+                            <li>new rule files are generated for you on startup, so there is nothing to set up first</li>
+                        </ul>
+                    </div>
+
+                    <!-- backup / restore -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">backup / restore</h3>
+                        <p class="tut-text">save your current setup, or roll everything back to a clean slate.</p>
+                        <ul class="howto-steps">
+                            <li>create your own backup to snapshot your current setup before you experiment</li>
+                            <li>or download the remote backup, which restores the full defaults</li>
+                            <li>either way it is applied live, so you land on a known-good state right away</li>
+                        </ul>
+                    </div>
                 </div>
             </section>
 
