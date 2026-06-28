@@ -961,6 +961,11 @@
                 font-family: ui-monospace, Consolas, monospace;
                 font-size: 0.88em;
             }
+            .ref-table td.opt {
+                color: var(--accent-2);
+                font-family: var(--font-head);
+                font-weight: 600;
+            }
             .ref-table tbody tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
             /* tutorial body text */
@@ -1422,11 +1427,53 @@
             </section>
 
             <section class="panel" id="panel-trade" role="tabpanel">
-                <div class="card placeholder">
-                    <div class="ph-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
-                    <div class="wip-badge">Work in progress</div>
-                    <h2>Trade Bot</h2>
-                    <p>Tutorials and documentation for the Trade Bot will live here.</p>
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Tutorial</span>
+                        <h2 class="section-title"><span class="bar"></span>Trade Bot</h2>
+                        <p class="tut-intro">two parts working together — a browser addon and the buybot.</p>
+                    </div>
+
+                    <!-- section 1: how it works -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">how it works</h3>
+                        <p class="tut-text">the trade bot has two parts: the <span class="ui">autotravel</span> addon clicks travel the moment something comes up, and the buybot does the rest.</p>
+
+                        <p class="tut-note"><i class="fa-solid fa-puzzle-piece"></i> <span><span class="em">required:</span> it only works together with the <span class="ui">autotravel</span> addon for the <span class="ui">Brave</span> browser. the addon is available only in discord: <a class="lnk" href="https://discord.com/channels/978293023203008522/1419957366425784361" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-discord"></i>#autotravel-addon</a></span></p>
+
+                        <div class="shot" data-img="assets/tutorials/trade-bot/addon.png" data-cap="the autotravel addon (brave)"></div>
+                        <div class="shot" data-img="assets/tutorials/trade-bot/buybot.png" data-cap="the buybot"></div>
+
+                        <h4 class="tut-subtitle">requirements</h4>
+                        <ul class="howto-steps">
+                            <li>use multiple windows, not tabs — multiple tabs do not work, but multiple windows do</li>
+                            <li>only 720p, 1080p or 1440p window mode is supported</li>
+                            <li>turn any upscaling and hdr weirdness off</li>
+                            <li>keep everything on default settings — that is what gives a flawless experience</li>
+                        </ul>
+                    </div>
+
+                    <!-- section 2: settings -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">settings</h3>
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>buybot · ui settings</div>
+                            <table class="ref-table">
+                                <thead><tr><th>setting</th><th>what it does</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="opt">armed enable</td><td>the master switch — when armed, the bot will actually click and buy.</td></tr>
+                                    <tr><td class="opt">back to hideout</td><td>after a successful buy, send your character back to the hideout.</td></tr>
+                                    <tr><td class="opt">play sound on buy</td><td>play a sound whenever a buy goes through.</td></tr>
+                                    <tr><td class="opt">buy clicks (x)</td><td>how many times the bot tries the buy — higher values help with latency and false "not enough currency" messages.</td></tr>
+                                    <tr><td class="opt">max load wait (sec)</td><td>how long to wait for loading to finish before accepting it as a failure.</td></tr>
+                                    <tr><td class="opt">refresh page after cycle</td><td>refresh the current window after a cycle to hunt another item.</td></tr>
+                                    <tr><td class="opt">refresh delay (sec)</td><td>how long to wait after a buy before refreshing.</td></tr>
+                                    <tr><td class="opt">max refresh (0 = inf)</td><td>how many times to refresh before stopping — 0 means infinite.</td></tr>
+                                    <tr><td class="opt">App port (restart to apply)</td><td>the local web server port; change it only if another app conflicts. restart to apply.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </section>
 
