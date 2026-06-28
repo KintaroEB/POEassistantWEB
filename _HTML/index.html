@@ -250,6 +250,33 @@
                 box-shadow: 0 0 10px var(--accent-glow);
             }
 
+            /* divider + "TUTORIALS" group label before the feature tabs */
+            .tab-sep {
+                display: inline-flex;
+                align-items: center;
+                gap: 11px;
+                padding: 0 4px 0 8px;
+                user-select: none;
+            }
+            .tab-sep-line {
+                width: 1px;
+                height: 28px;
+                background: var(--border);
+            }
+            .tab-sep-label {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.68rem;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: var(--faint);
+                white-space: nowrap;
+            }
+            .tab-sep-label i { color: var(--accent); opacity: 0.85; font-size: 0.78rem; }
+
             /* =========================================================
                PANELS
                ========================================================= */
@@ -427,16 +454,113 @@
             }
 
             .compare-wrap {
-                padding: 10px 40px 40px;
-                text-align: center;
+                padding: 6px 40px 44px;
             }
-            .compare-wrap iframe {
-                width: 100%;
+            .compare-title {
+                text-align: center;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.92rem;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin: 0 0 16px;
+            }
+
+            /* click-to-swap before/after viewer */
+            .ba {
+                position: relative;
                 max-width: 920px;
-                height: 560px;
+                margin: 0 auto;
+                line-height: 0;            /* remove img baseline gap */
                 border-radius: var(--radius);
+                overflow: hidden;
                 border: 1px solid var(--border);
                 background: var(--bg-0);
+                box-shadow: 0 30px 60px -40px #000;
+                cursor: pointer;
+                user-select: none;
+                outline: none;
+            }
+            .ba:hover { border-color: var(--border-accent); }
+            .ba:focus-visible {
+                border-color: var(--border-accent);
+                box-shadow: 0 0 0 2px var(--border-accent), 0 30px 60px -40px #000;
+            }
+
+            .ba-img { display: block; width: 100%; height: auto; }
+            .ba-before { position: relative; z-index: 1; }   /* defines the box height */
+            .ba-after {
+                position: absolute;
+                inset: 0;
+                z-index: 2;
+                width: 100%; height: 100%;
+                opacity: 0;
+                transform: scale(1.04);
+                transition: opacity 0.9s ease, transform 0.9s ease;
+                pointer-events: none;
+            }
+            .ba.show-after .ba-after { opacity: 1; transform: scale(1); }
+
+            .ba-badge {
+                position: absolute;
+                top: 12px; left: 12px;
+                z-index: 3;
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.74rem;
+                letter-spacing: 1px;
+                line-height: 1;
+                color: var(--muted);
+                background: rgba(11, 9, 19, 0.78);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                border: 1px solid var(--border);
+                padding: 7px 12px;
+                border-radius: 999px;
+                transition: color 0.4s ease, border-color 0.4s ease;
+            }
+            .ba-badge i { color: var(--muted); transition: color 0.4s ease; }
+            .ba.show-after .ba-badge { color: var(--accent-2); border-color: var(--border-accent); }
+            .ba.show-after .ba-badge i { color: var(--accent); }
+
+            .ba-hint {
+                position: absolute;
+                right: 12px; bottom: 12px;
+                z-index: 3;
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.72rem;
+                letter-spacing: 1px;
+                line-height: 1;
+                color: #1a0e00;
+                background: linear-gradient(135deg, var(--accent), #ff5e00);
+                box-shadow: 0 0 16px var(--accent-glow);
+                padding: 7px 12px;
+                border-radius: 999px;
+                animation: hintPulse 2.4s ease-in-out infinite;
+                transition: opacity 0.4s ease, transform 0.4s ease;
+            }
+            .ba.interacted .ba-hint {
+                opacity: 0;
+                transform: translateY(6px);
+                pointer-events: none;
+                animation: none;
+            }
+            @keyframes hintPulse {
+                0%, 100% { transform: translateY(0); }
+                50%      { transform: translateY(-3px); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .ba-after { transition: opacity 0.3s ease; transform: none; }
+                .ba.show-after .ba-after { transform: none; }
+                .ba-hint { animation: none; }
             }
 
             .qol {
@@ -542,25 +666,31 @@
         <main class="shell">
             <!-- ===================== TAB BAR ===================== -->
             <nav class="tabbar" role="tablist">
-                <button class="tab active" data-tab="test" role="tab">
-                    <i class="fa-solid fa-flask"></i> Test
+                <button class="tab active" data-tab="overview" role="tab">
+                    <i class="fa-solid fa-house"></i> Overview
                 </button>
-                <button class="tab" data-tab="assistant" role="tab">
+
+                <span class="tab-sep" aria-hidden="true">
+                    <span class="tab-sep-line"></span>
+                    <span class="tab-sep-label"><i class="fa-solid fa-graduation-cap"></i> Tutorials</span>
+                </span>
+
+                <button class="tab tab-tut" data-tab="assistant" role="tab">
                     <i class="fa-solid fa-robot"></i> Assistant App
                 </button>
-                <button class="tab" data-tab="overlay" role="tab">
+                <button class="tab tab-tut" data-tab="overlay" role="tab">
                     <i class="fa-solid fa-layer-group"></i> Overlay POE
                 </button>
-                <button class="tab" data-tab="ggpx" role="tab">
+                <button class="tab tab-tut" data-tab="ggpx" role="tab">
                     <i class="fa-solid fa-file-code"></i> GGPX Editor
                 </button>
-                <button class="tab" data-tab="trade" role="tab">
+                <button class="tab tab-tut" data-tab="trade" role="tab">
                     <i class="fa-solid fa-arrow-right-arrow-left"></i> Trade Bot
                 </button>
             </nav>
 
-            <!-- ===================== TEST PANEL (current content) ===================== -->
-            <section class="panel active" id="panel-test" role="tabpanel">
+            <!-- ===================== OVERVIEW PANEL (current content) ===================== -->
+            <section class="panel active" id="panel-overview" role="tabpanel">
                 <!-- hero -->
                 <div class="hero">
                     <div class="hero-inner">
@@ -617,11 +747,16 @@
                         </ul>
                     </div>
 
-                    <!-- before/after comparison -->
+                    <!-- before/after comparison (click to swap) -->
                     <div class="compare-wrap">
-                        <iframe class="juxtapose" frameborder="0"
-                            src="https://cdn.knightlab.com/libs/juxtapose/latest/embed/index.html?uid=a9392002-e5ab-11ef-9397-d93975fe8866">
-                        </iframe>
+                        <h3 class="compare-title">Before / After — Heavy Preset</h3>
+                        <div class="ba" id="baCompare" role="button" tabindex="0" aria-pressed="false"
+                             aria-label="Before and after comparison — click to swap">
+                            <img class="ba-img ba-before" src="assets/before.jpg" alt="Original render" draggable="false" />
+                            <img class="ba-img ba-after" src="assets/after.jpg" alt="Heavy Preset render" draggable="false" />
+                            <span class="ba-badge"><i class="fa-regular fa-image"></i> <span class="ba-state">Original</span></span>
+                            <span class="ba-hint"><i class="fa-solid fa-hand-pointer"></i> Click to compare</span>
+                        </div>
                     </div>
 
                     <!-- quality of life -->
@@ -691,6 +826,22 @@
                 localStorage.setItem("activeTab", name);
             }
             tabs.forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+
+            /* ---------- before / after click-to-swap ---------- */
+            const ba = document.getElementById("baCompare");
+            if (ba) {
+                const baState = ba.querySelector(".ba-state");
+                const toggleBA = () => {
+                    const showingAfter = ba.classList.toggle("show-after");
+                    ba.classList.add("interacted");
+                    ba.setAttribute("aria-pressed", showingAfter ? "true" : "false");
+                    if (baState) baState.textContent = showingAfter ? "Heavy Preset" : "Original";
+                };
+                ba.addEventListener("click", toggleBA);
+                ba.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleBA(); }
+                });
+            }
 
             /* ---------- copy discord id ---------- */
             function copyDiscordID() {
@@ -828,7 +979,9 @@
 
             document.addEventListener("DOMContentLoaded", () => {
                 changeLanguage(localStorage.getItem("lang") || "en");
-                switchTab(localStorage.getItem("activeTab") || "test");
+                const saved = localStorage.getItem("activeTab");
+                const valid = saved && document.querySelector('.tab[data-tab="' + saved + '"]');
+                switchTab(valid ? saved : "overview");
             });
         </script>
     </body>
