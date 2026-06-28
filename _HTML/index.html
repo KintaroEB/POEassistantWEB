@@ -1004,6 +1004,33 @@
                 font-size: 0.85em;
             }
 
+            /* "views at a glance" card grid */
+            .view-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 12px;
+            }
+            .view-item {
+                background: var(--bg-1);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-sm);
+                padding: 14px 16px;
+                transition: border-color 0.16s ease, transform 0.16s ease;
+            }
+            .view-item:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+            .view-name {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                font-family: var(--font-head);
+                font-weight: 700;
+                font-size: 0.95rem;
+                color: var(--accent-2);
+                margin-bottom: 7px;
+            }
+            .view-name i { color: var(--accent); font-size: 0.9em; width: 18px; text-align: center; }
+            .view-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+
             /* =========================================================
                FOOTER
                ========================================================= */
@@ -1303,11 +1330,85 @@
             </section>
 
             <section class="panel" id="panel-overlay" role="tabpanel">
-                <div class="card placeholder">
-                    <div class="ph-icon"><i class="fa-solid fa-layer-group"></i></div>
-                    <div class="wip-badge">Work in progress</div>
-                    <h2>Overlay POE</h2>
-                    <p>Tutorials and documentation for the Overlay POE will live here.</p>
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Tutorial</span>
+                        <h2 class="section-title"><span class="bar"></span>Overlay POE</h2>
+                        <p class="tut-intro">a radar overlay for poe2 with a live settings dashboard you run right in your browser.</p>
+                    </div>
+
+                    <!-- section 1: open the dashboard -->
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/overlay-poe"></div>
+                        <h3 class="tut-section-title">open the dashboard</h3>
+                        <ul class="howto-steps">
+                            <li>launch the overlay — the settings server starts together with it</li>
+                            <li>open <code>localhost:5005</code> in any browser to reach the dashboard</li>
+                            <li>it is bound to your machine only and read-only from the outside, so it stays private</li>
+                            <li>every change applies to the overlay live — there is no save button and no restart</li>
+                            <li>the dashboard is made to be explored, so poke around and learn by doing</li>
+                        </ul>
+                    </div>
+
+                    <!-- section 2: the views at a glance -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">the dashboard views</h3>
+                        <p class="tut-text">the sidebar groups every tool under <span class="ui">ENTITY DATA</span>. here is what each view does at a glance — deeper guides for the important ones will follow.</p>
+                        <div class="view-list">
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-satellite-dish"></i>Live Data</div>
+                                <div class="view-desc">the live feed of every entity the overlay is tracking in your zone — what it sees, how far away it is, and whether it is being drawn.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-map"></i>Live Atlas</div>
+                                <div class="view-desc">a live snapshot of the atlas as the overlay reads it, so you can check what it detects on the world map.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-eye-slash"></i>Force Hide</div>
+                                <div class="view-desc">remove matching entities or navmesh tiles from both the live data and the overlay — kill the clutter you never want to see.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-eye"></i>Force Show</div>
+                                <div class="view-desc">the opposite of force hide: make specific entities or navmesh matches always draw on the overlay.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-gear"></i>Settings</div>
+                                <div class="view-desc">general overlay behavior, plus icon styling and per-entity icon overrides.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-bullseye"></i>Threat Indicator</div>
+                                <div class="view-desc">the warning ring drawn around dangerous monsters — ring size and properties for all rarities, with optional per-rarity color overrides.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-skull"></i>Monster Mod Watcher</div>
+                                <div class="view-desc">a catalog of monster mods you have seen and strict all-of rules that flag dangerous rare combinations; rules and findings are shareable.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-map-location-dot"></i>Atlas Nodes</div>
+                                <div class="view-desc">screen-space draw offsets for atlas markers, plus patterns that highlight specific maps, tags or biomes on the atlas.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-location-dot"></i>Zone Info</div>
+                                <div class="view-desc">the current zone with your own notes and a history of the zones you visited this session.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-chart-simple"></i>Session Stats</div>
+                                <div class="view-desc">live stats for your session and the current zone since the dashboard was opened.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-keyboard"></i>Hotkeys</div>
+                                <div class="view-desc">single-key bindings for overlay actions — changes apply immediately.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-floppy-disk"></i>Backup / Restore</div>
+                                <div class="view-desc">named config profiles you can switch between instantly, full json export and restore, and a reset back to defaults.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-users"></i>Community</div>
+                                <div class="view-desc">shared preset configs from the community, applied live and auto-backed-up first.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
