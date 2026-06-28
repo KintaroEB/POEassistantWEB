@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title id="title">POE Assistant — Tutorials</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+        <style>
+            /* =========================================================
+               OPERA GX  ·  "configure / mods" inspired theme
+               Dark blue/purple fields  ·  orange accents
+               ========================================================= */
+            :root {
+                /* surfaces */
+                --bg-0: #0b0913;   /* deepest backdrop */
+                --bg-1: #14101f;   /* page base */
+                --bg-2: #1a1530;   /* panel */
+                --bg-3: #221b3d;   /* raised / hover */
+                --bg-4: #2b2350;   /* active / pressed */
+                --purple: #3a2c6b;
+
+                /* accent (orange) */
+                --accent: #ff7a18;
+                --accent-2: #ff9d4d;
+                --accent-soft: rgba(255, 122, 24, 0.14);
+                --accent-glow: rgba(255, 122, 24, 0.45);
+
+                /* text */
+                --text: #ece9f5;
+                --muted: #9a93bd;
+                --faint: #6f688f;
+
+                /* lines */
+                --border: rgba(255, 255, 255, 0.07);
+                --border-accent: rgba(255, 122, 24, 0.40);
+
+                --radius: 14px;
+                --radius-sm: 9px;
+                --topbar-h: 60px;
+
+                --font-head: "Chakra Petch", -apple-system, "Segoe UI", sans-serif;
+                --font-body: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+            }
+
+            *, *::before, *::after { box-sizing: border-box; }
+
+            html { scroll-behavior: smooth; }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                font-family: var(--font-body);
+                color: var(--text);
+                background-color: var(--bg-1);
+                background-image:
+                    radial-gradient(900px 600px at 12% -8%, rgba(255, 122, 24, 0.10), transparent 60%),
+                    radial-gradient(1100px 700px at 100% 0%, rgba(106, 64, 200, 0.22), transparent 55%),
+                    radial-gradient(800px 800px at 50% 120%, rgba(58, 44, 107, 0.30), transparent 60%),
+                    linear-gradient(180deg, var(--bg-1), var(--bg-0));
+                background-attachment: fixed;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            /* faint grid texture overlay */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 0;
+                background-image:
+                    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+                background-size: 46px 46px;
+                mask-image: radial-gradient(ellipse 120% 90% at 50% 0%, #000 30%, transparent 80%);
+            }
+
+            a { color: var(--accent-2); text-decoration: none; }
+            a:hover { color: var(--accent); }
+
+            ::selection { background: var(--accent-soft); color: #fff; }
+
+            /* ---------- custom scrollbar ---------- */
+            ::-webkit-scrollbar { width: 12px; height: 12px; }
+            ::-webkit-scrollbar-track { background: var(--bg-0); }
+            ::-webkit-scrollbar-thumb {
+                background: linear-gradient(var(--purple), var(--bg-3));
+                border: 3px solid var(--bg-0);
+                border-radius: 20px;
+            }
+            ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+            /* =========================================================
+               TOP BAR
+               ========================================================= */
+            .topbar {
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                height: var(--topbar-h);
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                padding: 0 22px;
+                background: rgba(12, 10, 20, 0.72);
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                font-family: var(--font-head);
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                font-size: 1.02rem;
+                color: var(--text);
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+            .brand .logo {
+                display: grid;
+                place-items: center;
+                width: 30px; height: 30px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, var(--accent), #ff5e00);
+                color: #1a0e00;
+                box-shadow: 0 0 16px var(--accent-glow);
+                font-size: 0.95rem;
+            }
+            .brand b { color: var(--accent); font-weight: 700; }
+
+            .topbar-spacer { flex: 1; }
+
+            .lang-switch {
+                display: inline-flex;
+                background: var(--bg-2);
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                padding: 3px;
+            }
+            .lang-switch button {
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.74rem;
+                letter-spacing: 1px;
+                color: var(--muted);
+                background: transparent;
+                border: 0;
+                padding: 5px 13px;
+                border-radius: 999px;
+                cursor: pointer;
+                transition: all 0.18s ease;
+            }
+            .lang-switch button:hover { color: var(--text); }
+            .lang-switch button.active {
+                color: #1a0e00;
+                background: linear-gradient(135deg, var(--accent), #ff5e00);
+                box-shadow: 0 0 12px var(--accent-glow);
+            }
+
+            .topbar-discord {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+                font-size: 0.84rem;
+                color: var(--text);
+                background: var(--bg-2);
+                border: 1px solid var(--border);
+                padding: 8px 15px;
+                border-radius: 999px;
+                transition: all 0.18s ease;
+            }
+            .topbar-discord:hover {
+                color: #fff;
+                border-color: var(--border-accent);
+                box-shadow: 0 0 0 1px var(--border-accent), 0 0 18px rgba(255,122,24,0.18);
+            }
+            .topbar-discord i { color: #8a9bff; }
+
+            /* =========================================================
+               LAYOUT SHELL
+               ========================================================= */
+            .shell {
+                position: relative;
+                z-index: 1;
+                max-width: 1180px;
+                margin: 0 auto;
+                padding: 30px 22px 70px;
+            }
+
+            /* =========================================================
+               TAB BAR  (subfeature switcher)
+               ========================================================= */
+            .tabbar {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                padding: 7px;
+                background: linear-gradient(180deg, var(--bg-2), rgba(20,16,31,0.6));
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 40px -28px #000;
+            }
+
+            .tab {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                gap: 9px;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.86rem;
+                letter-spacing: 0.4px;
+                color: var(--muted);
+                background: transparent;
+                border: 1px solid transparent;
+                padding: 10px 16px;
+                border-radius: var(--radius-sm);
+                cursor: pointer;
+                transition: all 0.18s ease;
+            }
+            .tab i { font-size: 0.95rem; opacity: 0.85; }
+            .tab:hover {
+                color: var(--text);
+                background: var(--bg-3);
+            }
+            .tab.active {
+                color: #fff;
+                background: linear-gradient(180deg, var(--bg-4), var(--bg-3));
+                border-color: var(--border-accent);
+                box-shadow: 0 0 0 1px var(--border-accent), 0 8px 24px -12px var(--accent-glow);
+            }
+            .tab.active i { color: var(--accent); opacity: 1; }
+            .tab.active::after {
+                content: "";
+                position: absolute;
+                left: 16px; right: 16px; bottom: -8px;
+                height: 2px;
+                border-radius: 2px;
+                background: linear-gradient(90deg, transparent, var(--accent), transparent);
+                box-shadow: 0 0 10px var(--accent-glow);
+            }
+
+            /* =========================================================
+               PANELS
+               ========================================================= */
+            .panel { display: none; margin-top: 30px; }
+            .panel.active {
+                display: block;
+                animation: panelIn 0.32s ease both;
+            }
+            @keyframes panelIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to   { opacity: 1; transform: translateY(0); }
+            }
+
+            .card {
+                background: linear-gradient(180deg, var(--bg-2), rgba(20,16,31,0.55));
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                box-shadow: 0 24px 60px -40px #000;
+            }
+
+            /* ---------- hero (inside Test tab) ---------- */
+            .hero {
+                position: relative;
+                overflow: hidden;
+                padding: 64px 40px;
+                text-align: center;
+                background:
+                    linear-gradient(180deg, rgba(26,21,48,0.72), rgba(20,16,31,0.92)),
+                    url("assets/img/bg1.png") center / cover no-repeat;
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+            }
+            .hero::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: radial-gradient(700px 300px at 50% -10%, rgba(255,122,24,0.18), transparent 70%);
+            }
+            .hero-inner { position: relative; z-index: 1; }
+
+            .eyebrow {
+                display: inline-block;
+                font-family: var(--font-head);
+                font-size: 0.72rem;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: var(--accent);
+                background: var(--accent-soft);
+                border: 1px solid var(--border-accent);
+                padding: 5px 13px;
+                border-radius: 999px;
+                margin-bottom: 18px;
+            }
+
+            h1.hero-title {
+                font-family: var(--font-head);
+                font-weight: 700;
+                font-size: clamp(2.1rem, 5vw, 3.4rem);
+                letter-spacing: 2px;
+                margin: 0 0 14px;
+                text-transform: uppercase;
+                background: linear-gradient(180deg, #fff, #cfc7e8);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                text-shadow: 0 0 40px rgba(255,122,24,0.12);
+            }
+            .hero-sub {
+                color: var(--muted);
+                font-size: 1.04rem;
+                margin: 4px 0;
+            }
+            .hero-sub.accent { color: var(--accent-2); font-weight: 600; }
+
+            .btn-row {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 30px;
+            }
+
+            .btn {
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.9rem;
+                letter-spacing: 0.5px;
+                padding: 12px 24px;
+                border-radius: 999px;
+                border: 1px solid var(--border);
+                background: var(--bg-3);
+                color: var(--text);
+                cursor: pointer;
+                transition: all 0.18s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 9px;
+            }
+            .btn:hover { background: var(--bg-4); color: #fff; transform: translateY(-1px); }
+            .btn-primary {
+                background: linear-gradient(135deg, var(--accent), #ff5e00);
+                border-color: transparent;
+                color: #1a0e00;
+                box-shadow: 0 8px 24px -8px var(--accent-glow);
+            }
+            .btn-primary:hover {
+                background: linear-gradient(135deg, var(--accent-2), var(--accent));
+                color: #1a0e00;
+                box-shadow: 0 10px 30px -8px var(--accent-glow);
+            }
+
+            /* ---------- generic content sections ---------- */
+            .section { padding: 38px 40px; }
+            .section + .section { border-top: 1px solid var(--border); }
+
+            .section-title {
+                font-family: var(--font-head);
+                font-weight: 700;
+                font-size: clamp(1.5rem, 3vw, 2.1rem);
+                letter-spacing: 1px;
+                margin: 0 0 22px;
+            }
+            .section-title .bar {
+                display: inline-block;
+                width: 34px; height: 3px;
+                vertical-align: middle;
+                margin-right: 14px;
+                background: linear-gradient(90deg, var(--accent), transparent);
+                border-radius: 3px;
+            }
+
+            .gui-shot {
+                display: block;
+                max-width: 100%;
+                margin: 0 auto 26px;
+                border-radius: var(--radius);
+                border: 1px solid var(--border);
+                box-shadow: 0 30px 60px -40px #000;
+            }
+
+            /* feature list as Opera-GX style chips/rows */
+            .feature-list {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+                gap: 9px;
+            }
+            .feature-list li {
+                position: relative;
+                padding: 11px 14px 11px 38px;
+                background: var(--bg-1);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-sm);
+                font-size: 0.9rem;
+                color: var(--muted);
+                transition: all 0.16s ease;
+            }
+            .feature-list li::before {
+                content: "\f0da"; /* fa caret-right */
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+                position: absolute;
+                left: 14px; top: 11px;
+                color: var(--accent);
+                font-size: 0.8rem;
+            }
+            .feature-list li:hover {
+                color: var(--text);
+                border-color: var(--border-accent);
+                background: var(--bg-2);
+                transform: translateX(2px);
+            }
+
+            .compare-wrap {
+                padding: 10px 40px 40px;
+                text-align: center;
+            }
+            .compare-wrap iframe {
+                width: 100%;
+                max-width: 920px;
+                height: 560px;
+                border-radius: var(--radius);
+                border: 1px solid var(--border);
+                background: var(--bg-0);
+            }
+
+            .qol {
+                display: grid;
+                grid-template-columns: 240px 1fr;
+                gap: 34px;
+                align-items: center;
+            }
+            .qol img {
+                width: 100%;
+                border-radius: 50%;
+                border: 1px solid var(--border-accent);
+                box-shadow: 0 0 40px -10px var(--accent-glow);
+            }
+
+            /* =========================================================
+               PLACEHOLDER (work-in-progress) panels
+               ========================================================= */
+            .placeholder {
+                text-align: center;
+                padding: 80px 40px;
+            }
+            .placeholder .ph-icon {
+                display: grid;
+                place-items: center;
+                width: 88px; height: 88px;
+                margin: 0 auto 24px;
+                border-radius: 22px;
+                font-size: 2.1rem;
+                color: var(--accent);
+                background: var(--accent-soft);
+                border: 1px solid var(--border-accent);
+                box-shadow: 0 0 40px -8px var(--accent-glow);
+            }
+            .placeholder h2 {
+                font-family: var(--font-head);
+                font-weight: 700;
+                font-size: 1.9rem;
+                letter-spacing: 1px;
+                margin: 0 0 10px;
+            }
+            .wip-badge {
+                display: inline-block;
+                font-family: var(--font-head);
+                font-size: 0.68rem;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: var(--accent);
+                border: 1px solid var(--border-accent);
+                background: var(--accent-soft);
+                padding: 4px 11px;
+                border-radius: 999px;
+                margin-bottom: 18px;
+            }
+            .placeholder p {
+                color: var(--muted);
+                max-width: 480px;
+                margin: 0 auto;
+                line-height: 1.6;
+            }
+
+            /* =========================================================
+               FOOTER
+               ========================================================= */
+            footer {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                color: var(--faint);
+                font-size: 0.82rem;
+                padding: 28px 22px 40px;
+                border-top: 1px solid var(--border);
+            }
+
+            @media (max-width: 640px) {
+                .qol { grid-template-columns: 1fr; text-align: center; }
+                .qol img { max-width: 200px; margin: 0 auto; }
+                .section, .hero { padding-left: 22px; padding-right: 22px; }
+                .topbar-discord span { display: none; }
+            }
+        </style>
+    </head>
+
+    <body id="page-top">
+        <!-- ===================== TOP BAR ===================== -->
+        <header class="topbar">
+            <div class="brand">
+                <span class="logo"><i class="fa-solid fa-bolt"></i></span>
+                <span id="nav-title">POE&nbsp;<b>ASSISTANT</b></span>
+            </div>
+            <div class="topbar-spacer"></div>
+
+            <div class="lang-switch" role="group" aria-label="Language">
+                <button id="lang-en" class="active" onclick="changeLanguage('en')">EN</button>
+                <button id="lang-cn" onclick="changeLanguage('cn')">CN</button>
+            </div>
+
+            <a class="topbar-discord" href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-discord"></i><span id="topbar-discord-text">Join Discord</span>
+            </a>
+        </header>
+
+        <main class="shell">
+            <!-- ===================== TAB BAR ===================== -->
+            <nav class="tabbar" role="tablist">
+                <button class="tab active" data-tab="test" role="tab">
+                    <i class="fa-solid fa-flask"></i> Test
+                </button>
+                <button class="tab" data-tab="assistant" role="tab">
+                    <i class="fa-solid fa-robot"></i> Assistant App
+                </button>
+                <button class="tab" data-tab="overlay" role="tab">
+                    <i class="fa-solid fa-layer-group"></i> Overlay POE
+                </button>
+                <button class="tab" data-tab="ggpx" role="tab">
+                    <i class="fa-solid fa-file-code"></i> GGPX Editor
+                </button>
+                <button class="tab" data-tab="trade" role="tab">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Trade Bot
+                </button>
+            </nav>
+
+            <!-- ===================== TEST PANEL (current content) ===================== -->
+            <section class="panel active" id="panel-test" role="tabpanel">
+                <!-- hero -->
+                <div class="hero">
+                    <div class="hero-inner">
+                        <span class="eyebrow">Quality of life for POE1 &amp; POE2</span>
+                        <h1 class="hero-title" id="header-title">POE ASSISTANT</h1>
+                        <p class="hero-sub" id="header-subtitle">Take care of your hands and mind!</p>
+                        <p class="hero-sub" id="header-subtitleExtra">Works with POE1 and POE2</p>
+                        <p class="hero-sub accent" id="header-subtitleExtraExtra">We have over 18000 users — join the community and give it a try!</p>
+
+                        <div class="btn-row">
+                            <a id="btn-learn" class="btn btn-primary" href="#features"><i class="fa-solid fa-arrow-down"></i> Learn More</a>
+                            <a id="btn-discord" class="btn" href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-discord"></i> Join Discord</a>
+                            <button id="btn-discord-name" class="btn" onclick="copyDiscordID()"><i class="fa-solid fa-copy"></i> My Discord ID: kintaro_oe</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- features -->
+                <div class="card" id="features" style="margin-top:30px;">
+                    <div class="section">
+                        <img class="gui-shot" src="assets/gui.png" alt="POE Assistant GUI" />
+                        <h2 class="section-title" id="features-title"><span class="bar"></span>Feature Set &amp; Functionality</h2>
+                        <ul id="feature-list" class="feature-list">
+                            <li>Works with POE1 and POE2!</li>
+                            <li>Autopot – Supports Controllers, Mind over Matter, and Hybrid builds</li>
+                            <li>Auto Logout/Escape on HP/ES/Mana threshold</li>
+                            <li>Drowning Safety-Net to prevent accidental deaths</li>
+                            <li>Enhanced Visibility &amp; UI Tweaks</li>
+                            <li>Remove Atlas Fog &amp; Highlight Paths</li>
+                            <li>Zoomout – x1.3, x1.6, x1.9, x2.4, x3.0</li>
+                            <li>Minimap Reveal – Fog of War remains rendered, showing explored areas</li>
+                            <li>Always Show Enemy HP – Health bars always visible</li>
+                            <li>Remove Delirium Fog</li>
+                            <li>Blackscreen Mode for botting – Disables 3D rendering but keeps UI visible</li>
+                            <li>Custom Visual Presets for Performance &amp; Clarity</li>
+                            <li>Remove fog, bloom, environment effects, shadows, water, excessive particles</li>
+                            <li>Disable ground loot models, excessive MTX, corpses</li>
+                            <li>Faster rendering and light calculations</li>
+                            <li>Text &amp; Effect Filtering</li>
+                            <li>Highlight critical item/map text (e.g., immune monsters, bad mods)</li>
+                            <li>Full effect removal of specific spells and abilities</li>
+                            <li>Scripting &amp; Automation</li>
+                            <li>Autocast Charged Staff, Flicker Strike, Tempest Bell, Unbound Avatar, Elemental Invocation</li>
+                            <li>Fully customizable rule-based automation</li>
+                            <li>Scripting is fully open-source</li>
+                            <li>Community scripts available – Contributions welcome!</li>
+                            <li>Help is available for those struggling with scripting</li>
+                            <li>Application Security &amp; Updates</li>
+                            <li>The app does not inject any code at runtime; it simply reads game memory</li>
+                            <li>Minimap reveal and zoom-out are applied by editing specific game files before launch</li>
+                            <li>Server-side offset updates on startup</li>
+                            <li>Automatic updates on major releases</li>
+                            <li>As secure as it can be</li>
+                        </ul>
+                    </div>
+
+                    <!-- before/after comparison -->
+                    <div class="compare-wrap">
+                        <iframe class="juxtapose" frameborder="0"
+                            src="https://cdn.knightlab.com/libs/juxtapose/latest/embed/index.html?uid=a9392002-e5ab-11ef-9397-d93975fe8866">
+                        </iframe>
+                    </div>
+
+                    <!-- quality of life -->
+                    <div class="section">
+                        <div class="qol">
+                            <img src="assets/gui.png" alt="POE Assistant" />
+                            <div>
+                                <h2 class="section-title" id="quality-title"><span class="bar"></span>Quality of Life For Everyone!</h2>
+                                <p id="quality-text" style="color:var(--muted);font-size:1.05rem;">We have over 18000 users — join the community and give it a try!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== PLACEHOLDER PANELS ===================== -->
+            <section class="panel" id="panel-assistant" role="tabpanel">
+                <div class="card placeholder">
+                    <div class="ph-icon"><i class="fa-solid fa-robot"></i></div>
+                    <div class="wip-badge">Work in progress</div>
+                    <h2>Assistant App</h2>
+                    <p>Tutorials and documentation for the Assistant App will live here.</p>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-overlay" role="tabpanel">
+                <div class="card placeholder">
+                    <div class="ph-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="wip-badge">Work in progress</div>
+                    <h2>Overlay POE</h2>
+                    <p>Tutorials and documentation for the Overlay POE will live here.</p>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-ggpx" role="tabpanel">
+                <div class="card placeholder">
+                    <div class="ph-icon"><i class="fa-solid fa-file-code"></i></div>
+                    <div class="wip-badge">Work in progress</div>
+                    <h2>GGPX Editor</h2>
+                    <p>Tutorials and documentation for the GGPX Editor will live here.</p>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-trade" role="tabpanel">
+                <div class="card placeholder">
+                    <div class="ph-icon"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+                    <div class="wip-badge">Work in progress</div>
+                    <h2>Trade Bot</h2>
+                    <p>Tutorials and documentation for the Trade Bot will live here.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            Copyright &copy; POE AutoPot 2025 · Discord ID: <strong style="color:var(--muted)">kintaro_oe</strong>
+        </footer>
+
+        <!-- ===================== SCRIPTS ===================== -->
+        <script>
+            /* ---------- tab switching ---------- */
+            const tabs = document.querySelectorAll(".tab");
+            const panels = document.querySelectorAll(".panel");
+
+            function switchTab(name) {
+                tabs.forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+                panels.forEach(p => p.classList.toggle("active", p.id === "panel-" + name));
+                localStorage.setItem("activeTab", name);
+            }
+            tabs.forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+
+            /* ---------- copy discord id ---------- */
+            function copyDiscordID() {
+                const button = document.getElementById("btn-discord-name");
+                navigator.clipboard.writeText("kintaro_oe").then(() => {
+                    button.innerHTML = '<i class="fa-solid fa-check"></i> Discord ID copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fa-solid fa-copy"></i> My Discord ID: kintaro_oe';
+                    }, 4000);
+                }).catch(err => console.error("Failed to copy Discord ID:", err));
+            }
+
+            /* ---------- language (EN / CN) ---------- */
+            const translations = {
+                en: {
+                    "title": "POE Assistant — Tutorials",
+                    "header-subtitle": "Take care of your hands and mind!",
+                    "header-subtitleExtra": "Works with POE1 and POE2!",
+                    "header-subtitleExtraExtra": "We have over 18000 users — join the community and give it a try!",
+                    "btn-learn": '<i class="fa-solid fa-arrow-down"></i> Learn More',
+                    "btn-discord": '<i class="fa-brands fa-discord"></i> Join Discord',
+                    "topbar-discord-text": "Join Discord",
+                    "features-title": '<span class="bar"></span>Feature Set & Functionality',
+                    "quality-title": '<span class="bar"></span>Quality of Life For Everyone!',
+                    "quality-text": "We already have over 18000 users — join the community and give it a try!",
+                    "feature-list": [
+                        "Works with POE1 and POE2!",
+                        "Autopot – Supports Controllers, Mind over Matter, and Hybrid builds",
+                        "Auto Logout/Escape on HP/ES/Mana threshold",
+                        "Drowning Safety-Net to prevent accidental deaths",
+                        "Enhanced Visibility & UI Tweaks",
+                        "Remove Atlas Fog & Highlight Paths",
+                        "Zoomout – x1.3, x1.6, x1.9, x2.4, x3.0",
+                        "Minimap Reveal – Fog of War remains rendered, showing explored areas",
+                        "Always Show Enemy HP – Health bars always visible",
+                        "Remove Delirium Fog",
+                        "Blackscreen Mode for botting – Disables 3D rendering but keeps UI visible",
+                        "Custom Visual Presets for Performance & Clarity",
+                        "Remove fog, bloom, environment effects, shadows, water, excessive particles",
+                        "Disable ground loot models, excessive MTX, corpses",
+                        "Faster rendering and light calculations",
+                        "Text & Effect Filtering",
+                        "Highlight critical item/map text (e.g., immune monsters, bad mods)",
+                        "Full effect removal of specific spells and abilities",
+                        "Scripting & Automation",
+                        "Autocast Charged Staff, Flicker Strike, Tempest Bell, Unbound Avatar, Elemental Invocation",
+                        "Fully customizable rule-based automation",
+                        "Scripting is fully open-source",
+                        "Community scripts available – Contributions welcome!",
+                        "Help is available for those struggling with scripting",
+                        "Application Security & Updates",
+                        "The app does not inject any code at runtime; it simply reads game memory",
+                        "Minimap reveal and zoom-out are applied by editing specific game files before launch",
+                        "Server-side offset updates on startup",
+                        "Automatic updates on major releases",
+                        "As secure as it can be"
+                    ]
+                },
+                cn: {
+                    "title": "POE 助手 — 教程",
+                    "header-subtitle": "照顾你的手和大脑！",
+                    "header-subtitleExtra": "适用于POE1和POE2！",
+                    "header-subtitleExtraExtra": "我们已经有超过18000名用户 —— 加入社区并试试看！",
+                    "btn-learn": '<i class="fa-solid fa-arrow-down"></i> 了解更多',
+                    "btn-discord": '<i class="fa-brands fa-discord"></i> 加入 Discord',
+                    "topbar-discord-text": "加入 Discord",
+                    "features-title": '<span class="bar"></span>功能集与功能性',
+                    "quality-title": '<span class="bar"></span>让每个人都享受高质量的生活！',
+                    "quality-text": "我们已经有超过18000名用户 —— 加入社区并试试看！",
+                    "feature-list": [
+                        "适用于POE1和POE2！",
+                        "自动药水 – 支持控制器、心灵至上和混合流派",
+                        "生命/能量护盾/魔力低于阈值时自动登出/逃跑",
+                        "防溺水安全网以防止意外死亡",
+                        "增强可视性和 UI 调整",
+                        "移除地图迷雾并高亮路径",
+                        "缩放 – x1.3, x1.6, x1.9, x2.4, x3.0",
+                        "小地图揭示 – 战争迷雾仍然可见，显示探索区域",
+                        "始终显示敌人血量 – 血条始终可见",
+                        "移除梦魇迷雾",
+                        "挂机模式 – 禁用 3D 渲染但保留 UI 可见",
+                        "自定义视觉预设以优化性能和清晰度",
+                        "移除雾气、光照、环境效果、阴影、水、过量粒子",
+                        "禁用地面战利品模型、过量 MTX、尸体",
+                        "更快的渲染和光照计算",
+                        "文本和效果过滤",
+                        "高亮关键物品/地图文本（例如，免疫怪物、不良词缀）",
+                        "完全移除特定法术和能力的效果",
+                        "脚本与自动化",
+                        "自动施放充能法杖、闪现打击、风暴钟、无拘束化身、元素召唤",
+                        "完全可自定义的基于规则的自动化",
+                        "脚本完全开源",
+                        "社区脚本可用 – 欢迎贡献！",
+                        "为需要脚本帮助的人提供支持",
+                        "应用程序安全性和更新",
+                        "该应用不会在运行时注入任何代码；它仅读取游戏内存",
+                        "小地图揭示和缩放是在启动前编辑特定游戏文件实现的",
+                        "服务器端偏移量更新在启动时进行",
+                        "主要版本的自动更新",
+                        "尽可能安全"
+                    ]
+                }
+            };
+
+            function setHTML(id, html) {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = html;
+            }
+
+            function changeLanguage(lang) {
+                const t = translations[lang];
+                document.getElementById("title").innerText = t["title"];
+                setHTML("header-subtitle", t["header-subtitle"]);
+                setHTML("header-subtitleExtra", t["header-subtitleExtra"]);
+                setHTML("header-subtitleExtraExtra", t["header-subtitleExtraExtra"]);
+                setHTML("btn-learn", t["btn-learn"]);
+                setHTML("btn-discord", t["btn-discord"]);
+                setHTML("topbar-discord-text", t["topbar-discord-text"]);
+                setHTML("features-title", t["features-title"]);
+                setHTML("quality-title", t["quality-title"]);
+                setHTML("quality-text", t["quality-text"]);
+
+                const featureList = document.getElementById("feature-list");
+                featureList.innerHTML = "";
+                t["feature-list"].forEach(text => {
+                    const li = document.createElement("li");
+                    li.innerText = text;
+                    featureList.appendChild(li);
+                });
+
+                document.getElementById("lang-en").classList.toggle("active", lang === "en");
+                document.getElementById("lang-cn").classList.toggle("active", lang === "cn");
+                localStorage.setItem("lang", lang);
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                changeLanguage(localStorage.getItem("lang") || "en");
+                switchTab(localStorage.getItem("activeTab") || "test");
+            });
+        </script>
+    </body>
+</html>
