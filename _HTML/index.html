@@ -838,6 +838,172 @@
             }
             .issue-solution b { color: var(--accent-2); font-weight: 600; }
 
+            /* numbered section titles + sub-headings */
+            .tut-section-title .num {
+                display: inline-grid;
+                place-items: center;
+                min-width: 28px;
+                height: 26px;
+                padding: 0 7px;
+                margin-right: 11px;
+                vertical-align: middle;
+                border-radius: 7px;
+                background: var(--accent-soft);
+                border: 1px solid var(--border-accent);
+                color: var(--accent);
+                font-size: 0.8rem;
+                font-weight: 700;
+            }
+            .tut-subtitle {
+                font-family: var(--font-head);
+                font-weight: 700;
+                font-size: 1.02rem;
+                letter-spacing: 0.3px;
+                color: var(--accent-2);
+                margin: 30px 0 12px;
+            }
+            .em { color: var(--accent); font-weight: 700; }
+
+            /* inline code token */
+            .tut code {
+                font-family: ui-monospace, "Cascadia Code", Consolas, "Liberation Mono", monospace;
+                font-size: 0.86em;
+                color: var(--accent-2);
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--border);
+                padding: 1px 6px;
+                border-radius: 6px;
+            }
+
+            /* info note */
+            .tut-note {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                max-width: 820px;
+                margin: 20px 0 0;
+                padding: 12px 14px;
+                line-height: 1.55;
+                color: var(--muted);
+                background: var(--accent-soft);
+                border: 1px solid var(--border-accent);
+                border-radius: var(--radius-sm);
+            }
+            .tut-note i { color: var(--accent); margin-top: 3px; }
+
+            /* code / reference panels */
+            .code-wrap {
+                max-width: 820px;
+                margin: 16px 0 0;
+                border: 1px solid var(--border);
+                border-radius: var(--radius-sm);
+                overflow: hidden;
+                background: var(--bg-1);
+            }
+            .code-head {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                padding: 9px 14px;
+                background: var(--bg-2);
+                border-bottom: 1px solid var(--border);
+                font-family: var(--font-head);
+                font-size: 0.72rem;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+            .code-head .dot {
+                width: 10px; height: 10px;
+                border-radius: 50%;
+                background: var(--accent);
+                box-shadow: 0 0 8px var(--accent-glow);
+            }
+            .codeblock {
+                margin: 0;
+                padding: 16px 18px;
+                max-height: 520px;
+                overflow: auto;
+                font-family: ui-monospace, "Cascadia Code", Consolas, "Liberation Mono", monospace;
+                font-size: 0.86rem;
+                line-height: 1.65;
+                color: #cfc9e6;
+                background: #0a0812;
+            }
+            .codeblock .k { color: #ff9d4d; }
+            .codeblock .s { color: #8ad08a; }
+            .codeblock .c { color: var(--faint); font-style: italic; }
+            .codeblock .fn { color: #8a9bff; }
+
+            .ref-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.92rem;
+            }
+            .ref-table th,
+            .ref-table td {
+                text-align: left;
+                padding: 9px 14px;
+                border-bottom: 1px solid var(--border);
+                vertical-align: top;
+            }
+            .ref-table tbody tr:last-child td { border-bottom: 0; }
+            .ref-table th {
+                font-family: var(--font-head);
+                font-size: 0.72rem;
+                letter-spacing: 1.5px;
+                text-transform: uppercase;
+                color: var(--faint);
+            }
+            .ref-table td.prop {
+                white-space: nowrap;
+                color: var(--accent-2);
+                font-family: ui-monospace, Consolas, monospace;
+                font-size: 0.88em;
+            }
+            .ref-table tbody tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+            /* tutorial body text */
+            .tut-text {
+                max-width: 820px;
+                color: var(--muted);
+                line-height: 1.65;
+                margin: 0 0 16px;
+            }
+
+            /* optional inline screenshot (auto-shows once the image exists) */
+            .shot { max-width: 820px; margin: 0 0 16px; }
+            .shot.has-img img {
+                display: block;
+                max-width: 100%;
+                border-radius: var(--radius-sm);
+                border: 1px solid var(--border);
+            }
+            .shot-cap { display: block; margin-top: 8px; font-size: 0.84rem; color: var(--faint); }
+            .shot-ph {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 9px;
+                text-align: center;
+                aspect-ratio: 16 / 6;
+                padding: 20px;
+                color: var(--muted);
+                background: var(--bg-0);
+                border: 1px dashed var(--border-accent);
+                border-radius: var(--radius-sm);
+            }
+            .shot-ph i { font-size: 1.8rem; color: var(--accent); opacity: 0.7; }
+            .shot-ph code {
+                color: var(--accent-2);
+                background: var(--accent-soft);
+                border: 1px solid var(--border);
+                padding: 2px 7px;
+                border-radius: 6px;
+                font-size: 0.85em;
+            }
+
             /* =========================================================
                FOOTER
                ========================================================= */
@@ -905,6 +1071,15 @@
                 </button>
                 <button class="tab tab-tut" data-tab="trade" role="tab">
                     <i class="fa-solid fa-arrow-right-arrow-left"></i> Trade Bot
+                </button>
+
+                <span class="tab-sep" aria-hidden="true">
+                    <span class="tab-sep-line"></span>
+                    <span class="tab-sep-label"><i class="fa-solid fa-star"></i> Extra</span>
+                </span>
+
+                <button class="tab tab-extra" data-tab="scripting" role="tab">
+                    <i class="fa-solid fa-code"></i> In-depth Scripting
                 </button>
             </nav>
 
@@ -1007,6 +1182,7 @@
                         <h3 class="tut-section-title">how to</h3>
                         <ul class="howto-steps">
                             <li>must have dependency: <a class="lnk" href="https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-8.0.28-windows-x64-installer" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i>.NET Desktop Runtime 8.0.28 (x64)</a></li>
+                            <li>must have dependency: <a class="lnk" href="https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i>Visual C++ Redistributable Runtime (all-in-one)</a></li>
                             <li>get the updater here: <a class="lnk" href="https://github.com/KintaroEB/POE-2-Assistance/raw/refs/heads/main/updater.zip"><i class="fa-solid fa-download"></i>updater.zip</a></li>
                             <li>start and select a folder (it must be empty)</li>
                             <li>click <span class="ui">Install</span> and read the warning (you must follow its advice or it will not work)</li>
@@ -1030,11 +1206,99 @@
 
             <!-- ===================== PLACEHOLDER PANELS ===================== -->
             <section class="panel" id="panel-assistant" role="tabpanel">
-                <div class="card placeholder">
-                    <div class="ph-icon"><i class="fa-solid fa-robot"></i></div>
-                    <div class="wip-badge">Work in progress</div>
-                    <h2>Assistant App</h2>
-                    <p>Tutorials and documentation for the Assistant App will live here.</p>
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Tutorial</span>
+                        <h2 class="section-title"><span class="bar"></span>Assistant App</h2>
+                        <p class="tut-intro">the main app — set it up, then dive into scripting.</p>
+                    </div>
+
+                    <!-- section 1: basics -->
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/assistant-app-basics"></div>
+                        <h3 class="tut-section-title"><span class="num">01</span>basics</h3>
+                        <ul class="howto-steps">
+                            <li>the app <span class="em">must</span> start as administrator</li>
+                            <li>select the correct game version and then you can start the game</li>
+                            <li>adjust sliders and checkboxes to your needs</li>
+                            <li>start game file edits on the right side with a single click</li>
+                            <li><span class="em">orange</span> options are paid features</li>
+                        </ul>
+                    </div>
+
+                    <!-- section 2: advanced -->
+                    <div class="tut-section">
+                        <div class="slideshow" data-src="assets/tutorials/assistant-app-advanced"></div>
+                        <h3 class="tut-section-title"><span class="num">02</span>advanced</h3>
+                        <ul class="howto-steps">
+                            <li>to run custom-made scripts (community ones or your own) you simply enable the checkbox and you're done</li>
+                            <li>naturally those scripts are empty until you fill them</li>
+                            <li>for that you can edit the <code>.AHK</code> files and create your own, or copy over others</li>
+                            <li>the assistant folder includes a <code>scripts</code> folder with some examples</li>
+                            <li>to use those: copy the whole content into e.g. <code>THREAD_CUSTOM_1.AHK</code> and enable that specific checkbox in the <span class="ui">UI</span> — and that's the concept of how to run it</li>
+                            <li>discord also has a <span class="ui">#scripting-forum</span> channel with user-made scripts to copy from; here you must read the author's notes too to understand how to use it properly</li>
+                        </ul>
+
+                        <h4 class="tut-subtitle">how do you make your own?</h4>
+                        <ul class="howto-steps">
+                            <li>follow along the examples and see what you can do solo or with ai alongside</li>
+                            <li>here are the current memory exposures:</li>
+                        </ul>
+
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>_POEMEMORY() · memory reference</div>
+                            <table class="ref-table">
+                                <thead><tr><th>property</th><th>meaning</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="prop">.ERROR</td><td><code>"NONE"</code> means everything is good</td></tr>
+                                    <tr><td class="prop">.CURHP</td><td>player current HP</td></tr>
+                                    <tr><td class="prop">.CURMANA</td><td>player current MP</td></tr>
+                                    <tr><td class="prop">.CURES</td><td>player current ES</td></tr>
+                                    <tr><td class="prop">.MAXHP / .MAXMANA / .MAXES</td><td>the matching maximum values</td></tr>
+                                    <tr><td class="prop">.BUFFLIST</td><td>use <code>.HasKey("...")</code> to check if a buff is present</td></tr>
+                                    <tr><td class="prop">.BUFFLIST["key"]</td><td>a buff exposes <code>.DURATION</code>, <code>.CHARGES</code>, <code>.UISTACK</code></td></tr>
+                                    <tr><td class="prop">.CURAREA</td><td>name of the current area</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>example · buff duration</div>
+<pre class="codeblock"><span class="c">; check a buff and react on its remaining duration</span>
+<span class="k">if</span> ( _POEMEMORY.BUFFLIST.<span class="fn">HasKey</span>(<span class="s">"tangle_drowning"</span>) == <span class="k">true</span> ) {
+    <span class="k">if</span> ( _POEMEMORY.BUFFLIST[<span class="s">"tangle_drowning"</span>].DURATION &lt; <span class="s">0.8</span> ) {
+        <span class="c">; ... your action here</span>
+    }
+}</pre>
+                        </div>
+
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>example · power charges</div>
+<pre class="codeblock"><span class="k">if</span> (_POEMEMORY.BUFFLIST[<span class="s">"power_charge"</span>].CHARGES &gt; <span class="s">0</span>) {
+
+    <span class="k">if</span> (_POEMEMORY.BUFFLIST[<span class="s">"charged_staff_stack"</span>].DURATION &lt; <span class="s">2.0</span>) {
+        <span class="fn">PressKey</span>(_SCRIPT_CHARGED_STAFF_KEY, <span class="s">1000</span>)
+    }
+    <span class="k">else if</span> (_POEMEMORY.BUFFLIST[<span class="s">"power_charge"</span>].DURATION &lt; <span class="s">2.0</span>) {
+        <span class="fn">PressKey</span>(_SCRIPT_CHARGED_STAFF_KEY, <span class="s">1000</span>)
+    }
+
+}</pre>
+                        </div>
+
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>reverse case · buff missing</div>
+<pre class="codeblock"><span class="c">; reverse case — act when a buff is missing</span>
+<span class="k">if</span> (_POEMEMORY.BUFFLIST.<span class="fn">HasKey</span>(<span class="s">"guard_flask_damage_absorption"</span>) == <span class="k">false</span>)
+{
+    <span class="fn">PressKey</span>(_SCRIPT_HP_FLASK_KEY, <span class="s">50</span>)
+    <span class="fn">THREAD_WAIT</span>(<span class="s">1000</span>)
+    <span class="fn">PressKey</span>(<span class="s">"Q"</span>, <span class="s">50</span>)
+}</pre>
+                        </div>
+
+                        <p class="tut-note"><i class="fa-solid fa-circle-info"></i> use the <span class="ui">Debug</span> checkbox to list everything currently available on your character, live.</p>
+                    </div>
                 </div>
             </section>
 
@@ -1062,6 +1326,59 @@
                     <div class="wip-badge">Work in progress</div>
                     <h2>Trade Bot</h2>
                     <p>Tutorials and documentation for the Trade Bot will live here.</p>
+                </div>
+            </section>
+
+            <!-- ===================== IN-DEPTH SCRIPTING (extra) ===================== -->
+            <section class="panel" id="panel-scripting" role="tabpanel">
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Extra</span>
+                        <h2 class="section-title"><span class="bar"></span>In-depth Scripting</h2>
+                        <p class="tut-intro">the framework every script follows, plus three real examples — see exactly how they are built.</p>
+                    </div>
+
+                    <!-- the framework -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">the framework</h3>
+                        <p class="tut-text">every script starts from the same skeleton. it pulls in the thread dependencies, waits a moment so memory is ready, loads your settings, then runs a main loop. the loop only acts when the game is in a valid state — <code>_POEMEMORY.ERROR</code> is <code>"NONE"</code>, you are not in town, you are alive, and the poe window is focused. your own logic goes where it says <code>YOUR CODE GOES HERE</code>.</p>
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>_THREAD_FRAMEWORK.AHK</div>
+                            <pre class="codeblock auto" data-src="assets/tutorials/assistant-scripting/_THREAD_FRAMEWORK.AHK" data-lang="ahk">loading…</pre>
+                        </div>
+                    </div>
+
+                    <!-- example 1 -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title"><span class="num">01</span>buff timer overlay</h3>
+                        <p class="tut-text">a live on-screen timer for a single buff. it watches <code>BUFFLIST</code> for a chosen buff (here <code>bedlam</code>) and draws a small always-on-top gui showing its remaining duration, hiding it again the moment the buff drops. this shows how to build a transparent overlay and keep it centered on the poe window as it moves.</p>
+                        <div class="shot" data-img="assets/tutorials/assistant-scripting/example-1.png" data-cap="how the bedlam timer looks in-game"></div>
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>advanced_example_1.AHK</div>
+                            <pre class="codeblock auto" data-src="assets/tutorials/assistant-scripting/advanced_example_1.AHK" data-lang="ahk">loading…</pre>
+                        </div>
+                    </div>
+
+                    <!-- example 2 -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title"><span class="num">02</span>charges hud</h3>
+                        <p class="tut-text">a charges display. it reads power, frenzy and endurance charges from <code>BUFFLIST</code> and shows them as colored panels that lay themselves out dynamically — only the charges you actually have are drawn, and each panel resizes to fill the bar. this shows how to manage several gui controls at once and only redraw a value when it changes.</p>
+                        <div class="shot" data-img="assets/tutorials/assistant-scripting/example-2.png" data-cap="how the charges hud looks in-game"></div>
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>advanced_example_2.AHK</div>
+                            <pre class="codeblock auto" data-src="assets/tutorials/assistant-scripting/advanced_example_2.AHK" data-lang="ahk">loading…</pre>
+                        </div>
+                    </div>
+
+                    <!-- example 3 -->
+                    <div class="tut-section">
+                        <h3 class="tut-section-title"><span class="num">03</span>timed keybind</h3>
+                        <p class="tut-text">a custom keybind. it remaps <code>q</code> so that — only while the script is active in a valid game state — pressing <code>q</code> first taps <code>t</code>, waits a moment, then holds <code>q</code> down for a set duration. outside of a valid state <code>q</code> behaves completely normally. this shows how to drive a timed input sequence from a single hotkey.</p>
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>advanced_example_3.AHK</div>
+                            <pre class="codeblock auto" data-src="assets/tutorials/assistant-scripting/advanced_example_3.AHK" data-lang="ahk">loading…</pre>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -1173,6 +1490,65 @@
                 stage.addEventListener("keydown", (e) => {
                     if (e.key === "ArrowRight") { e.preventDefault(); show(idx + 1); }
                     else if (e.key === "ArrowLeft") { e.preventDefault(); show(idx - 1); }
+                });
+            }
+
+            /* ---------- code blocks (fetch .AHK + lightweight highlight) ---------- */
+            function escapeHtml(s) {
+                return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
+            const AHK_KW = /\b(Loop|if|else|return|break|continue|global|Sleep|Send|SendEvent|SendMode|SetBatchLines|SetKeyDelay|Hotkey|KeyWait|WinSet|WinGetPos|GuiControl|Gui|true|false|AND|OR|NOT|ByRef)\b/g;
+            function highlightAHK(raw) {
+                return raw.split("\n").map(function (line) {
+                    // split off a trailing comment ( ";" at line start or after whitespace )
+                    let ci = -1;
+                    for (let i = 0; i < line.length; i++) {
+                        if (line[i] === ";" && (i === 0 || line[i - 1] === " " || line[i - 1] === "\t")) { ci = i; break; }
+                    }
+                    let code = escapeHtml(ci >= 0 ? line.slice(0, ci) : line);
+                    const comment = ci >= 0 ? escapeHtml(line.slice(ci)) : "";
+                    code = code.replace(/(^|\s)(#[A-Za-z]+)\b/g, '$1<span class="k">$2</span>');   // directives
+                    code = code.replace(/"[^"]*"/g, m => '<span class="s">' + m + '</span>');       // strings
+                    code = code.replace(/\b([A-Za-z_][A-Za-z0-9_]*)\(/g, '<span class="fn">$1</span>('); // calls
+                    code = code.replace(AHK_KW, '<span class="k">$1</span>');                       // keywords
+                    code = code.replace(/\b(\d+\.\d+|\d+)\b/g, '<span class="s">$1</span>');         // numbers
+                    return code + (comment ? '<span class="c">' + comment + '</span>' : "");
+                }).join("\n");
+            }
+            async function loadCodeBlocks() {
+                const blocks = document.querySelectorAll("pre.codeblock.auto[data-src]");
+                for (const pre of blocks) {
+                    try {
+                        const res = await fetch(pre.dataset.src);
+                        if (!res.ok) throw new Error(res.status);
+                        let text = await res.text();
+                        text = text.replace(/\t/g, "    ").replace(/\s+$/, "");
+                        pre.innerHTML = highlightAHK(text);
+                    } catch (e) {
+                        const url = pre.dataset.src;
+                        pre.innerHTML = '<span class="c">; could not load inline — open this page over http(s), or view the file directly:</span>\n'
+                            + '<a class="lnk" href="' + url + '" target="_blank" rel="noopener noreferrer">' + url + '</a>';
+                    }
+                }
+            }
+
+            /* ---------- optional inline screenshots ---------- */
+            function initShots() {
+                document.querySelectorAll(".shot[data-img]").forEach(el => {
+                    const src = el.dataset.img;
+                    const cap = el.dataset.cap || "";
+                    const img = new Image();
+                    img.onload = () => {
+                        el.classList.add("has-img");
+                        el.innerHTML = '<img src="' + src + '" alt="' + cap + '">'
+                            + (cap ? '<span class="shot-cap">' + cap + '</span>' : "");
+                    };
+                    img.onerror = () => {
+                        el.innerHTML = '<div class="shot-ph"><i class="fa-regular fa-image"></i>'
+                            + '<span>screenshot placeholder' + (cap ? ' — ' + cap : "") + '</span>'
+                            + '<code>' + src + '</code></div>';
+                    };
+                    img.src = src;
                 });
             }
 
@@ -1316,6 +1692,8 @@
                 const valid = saved && document.querySelector('.tab[data-tab="' + saved + '"]');
                 switchTab(valid ? saved : "overview");
                 document.querySelectorAll(".slideshow").forEach(initSlideshow);
+                loadCodeBlocks();
+                initShots();
             });
         </script>
     </body>
