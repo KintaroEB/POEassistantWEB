@@ -202,14 +202,29 @@
                ========================================================= */
             .tabbar {
                 display: flex;
-                gap: 8px;
-                flex-wrap: wrap;
-                padding: 7px;
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px;
                 background: linear-gradient(180deg, var(--bg-2), rgba(20,16,31,0.6));
                 border: 1px solid var(--border);
                 border-radius: var(--radius);
                 box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 18px 40px -28px #000;
             }
+            .tab-group { display: flex; flex-direction: column; gap: 8px; }
+            .tab-group-label {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                padding-left: 3px;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.68rem;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                color: var(--faint);
+            }
+            .tab-group-label i { color: var(--accent); opacity: 0.85; font-size: 0.78rem; }
+            .tab-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
             .tab {
                 position: relative;
@@ -240,42 +255,6 @@
                 box-shadow: 0 0 0 1px var(--border-accent), 0 8px 24px -12px var(--accent-glow);
             }
             .tab.active i { color: var(--accent); opacity: 1; }
-            .tab.active::after {
-                content: "";
-                position: absolute;
-                left: 16px; right: 16px; bottom: -8px;
-                height: 2px;
-                border-radius: 2px;
-                background: linear-gradient(90deg, transparent, var(--accent), transparent);
-                box-shadow: 0 0 10px var(--accent-glow);
-            }
-
-            /* divider + "TUTORIALS" group label before the feature tabs */
-            .tab-sep {
-                display: inline-flex;
-                align-items: center;
-                gap: 11px;
-                padding: 0 4px 0 8px;
-                user-select: none;
-            }
-            .tab-sep-line {
-                width: 1px;
-                height: 28px;
-                background: var(--border);
-            }
-            .tab-sep-label {
-                display: inline-flex;
-                align-items: center;
-                gap: 7px;
-                font-family: var(--font-head);
-                font-weight: 600;
-                font-size: 0.68rem;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                color: var(--faint);
-                white-space: nowrap;
-            }
-            .tab-sep-label i { color: var(--accent); opacity: 0.85; font-size: 0.78rem; }
 
             /* =========================================================
                PANELS
@@ -935,6 +914,36 @@
             .codeblock .c { color: var(--faint); font-style: italic; }
             .codeblock .fn { color: #8a9bff; }
 
+            /* copy button in a code header */
+            .code-copy {
+                margin-left: auto;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-family: var(--font-head);
+                font-weight: 600;
+                font-size: 0.66rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                color: var(--accent-2);
+                background: var(--accent-soft);
+                border: 1px solid var(--border-accent);
+                padding: 4px 11px;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+            .code-copy:hover {
+                color: #1a0e00;
+                background: linear-gradient(135deg, var(--accent), #ff5e00);
+                border-color: transparent;
+            }
+
+            /* ai prompt block — prose, so wrap instead of scroll sideways */
+            .codeblock.prompt { white-space: pre-wrap; word-break: break-word; }
+            .codeblock .pt { color: #fff; font-weight: 700; letter-spacing: 0.5px; }   /* # title */
+            .codeblock .ph { color: var(--accent); font-weight: 700; letter-spacing: 0.5px; } /* ## header */
+
             .ref-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -1080,39 +1089,44 @@
         <main class="shell">
             <!-- ===================== TAB BAR ===================== -->
             <nav class="tabbar" role="tablist">
-                <button class="tab active" data-tab="overview" role="tab">
-                    <i class="fa-solid fa-house"></i> Overview
-                </button>
+                <div class="tab-row">
+                    <button class="tab active" data-tab="overview" role="tab">
+                        <i class="fa-solid fa-house"></i> Overview
+                    </button>
+                </div>
 
-                <span class="tab-sep" aria-hidden="true">
-                    <span class="tab-sep-line"></span>
-                    <span class="tab-sep-label"><i class="fa-solid fa-graduation-cap"></i> Tutorials</span>
-                </span>
+                <div class="tab-group">
+                    <span class="tab-group-label"><i class="fa-solid fa-graduation-cap"></i> Tutorials</span>
+                    <div class="tab-row">
+                        <button class="tab tab-tut" data-tab="updater" role="tab">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Assistant Updater
+                        </button>
+                        <button class="tab tab-tut" data-tab="assistant" role="tab">
+                            <i class="fa-solid fa-robot"></i> Assistant App
+                        </button>
+                        <button class="tab tab-tut" data-tab="overlay" role="tab">
+                            <i class="fa-solid fa-layer-group"></i> Overlay POE
+                        </button>
+                        <button class="tab tab-tut" data-tab="ggpx" role="tab">
+                            <i class="fa-solid fa-file-code"></i> GGPX Editor
+                        </button>
+                        <button class="tab tab-tut" data-tab="trade" role="tab">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i> Trade Bot
+                        </button>
+                    </div>
+                </div>
 
-                <button class="tab tab-tut" data-tab="updater" role="tab">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Assistant Updater
-                </button>
-                <button class="tab tab-tut" data-tab="assistant" role="tab">
-                    <i class="fa-solid fa-robot"></i> Assistant App
-                </button>
-                <button class="tab tab-tut" data-tab="overlay" role="tab">
-                    <i class="fa-solid fa-layer-group"></i> Overlay POE
-                </button>
-                <button class="tab tab-tut" data-tab="ggpx" role="tab">
-                    <i class="fa-solid fa-file-code"></i> GGPX Editor
-                </button>
-                <button class="tab tab-tut" data-tab="trade" role="tab">
-                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Trade Bot
-                </button>
-
-                <span class="tab-sep" aria-hidden="true">
-                    <span class="tab-sep-line"></span>
-                    <span class="tab-sep-label"><i class="fa-solid fa-star"></i> Extra</span>
-                </span>
-
-                <button class="tab tab-extra" data-tab="scripting" role="tab">
-                    <i class="fa-solid fa-code"></i> In-depth Scripting
-                </button>
+                <div class="tab-group">
+                    <span class="tab-group-label"><i class="fa-solid fa-star"></i> Extra</span>
+                    <div class="tab-row">
+                        <button class="tab tab-extra" data-tab="scripting" role="tab">
+                            <i class="fa-solid fa-code"></i> In-depth Scripting
+                        </button>
+                        <button class="tab tab-extra" data-tab="aiscripting" role="tab">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Agent Scripting
+                        </button>
+                    </div>
+                </div>
             </nav>
 
             <!-- ===================== OVERVIEW PANEL (current content) ===================== -->
@@ -1594,6 +1608,94 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ===================== AI AGENT SCRIPTING (extra) ===================== -->
+            <section class="panel" id="panel-aiscripting" role="tabpanel">
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Extra</span>
+                        <h2 class="section-title"><span class="bar"></span>AI Agent Scripting</h2>
+                        <p class="tut-intro">don't want to learn autohotkey? hand this prompt to an ai agent and describe what you want — it already has everything it needs to write a working script.</p>
+                    </div>
+                    <div class="tut-section">
+                        <p class="tut-text">copy the prompt below, paste it into your ai of choice, then tell it what the script should do. paste the result into a <code>THREAD_CUSTOM_X.AHK</code> file and enable that checkbox — see <span class="ui">In-depth Scripting</span> for how to run it.</p>
+                        <div class="code-wrap prompt-block">
+                            <div class="code-head"><span class="dot"></span>ai agent prompt<button class="code-copy" type="button"><i class="fa-regular fa-copy"></i> copy</button></div>
+<pre class="codeblock prompt"><script type="text/plain">
+# ROLE
+You are an expert AutoHotkey v1 scripter. You write small automation "thread" scripts for the POE Assistant app, a Path of Exile / PoE2 helper. The user describes what a script should do; you reply with one complete, ready-to-run AutoHotkey v1 script and nothing else.
+
+## HOW THESE SCRIPTS RUN
+- Each script runs as an independent thread inside the app.
+- The user pastes your script into a file named `THREAD_CUSTOM_1.AHK` (or `_2`, `_3`, ...) and enables the matching checkbox in the app.
+- The app exposes live game state through a global object called `_POEMEMORY`, plus a few helper functions. Use ONLY the API documented below — never invent fields or functions.
+
+## REQUIRED SKELETON
+Every script MUST start from this exact skeleton and put its logic where it says YOUR CODE GOES HERE:
+
+#Include dependencies\includes\_INCLUDES_THREAD
+
+global KeyDelayTimes := {}
+global LastPressTime := {}
+THREAD_WAIT(_TICK_UPDATE_WAIT*8)
+LoadSettings()
+
+; MAIN LOOP
+Loop {
+    if ( (_POEMEMORY.ERROR == "NONE") AND (InTown() == false) AND (_POEMEMORY.CURHP > 0) ) {
+        if ( CheckPoeWindow() == true ) {
+            ; YOUR CODE GOES HERE
+        }
+    }
+    THREAD_WAIT(_TICK_UPDATE_CRITICAL)
+}
+
+- Keep the guard conditions intact: act only when there is no error, the player is not in town, the player is alive, and the PoE window is focused.
+- Never spin in a tight loop — always yield with `THREAD_WAIT` between iterations.
+
+## MEMORY API (_POEMEMORY)
+- `_POEMEMORY.ERROR` -> "NONE" when everything is fine
+- `_POEMEMORY.CURHP` / `.CURMANA` / `.CURES` -> current life / mana / energy shield
+- `_POEMEMORY.MAXHP` / `.MAXMANA` / `.MAXES` -> the matching maximums
+- `_POEMEMORY.CURAREA` -> name of the current area
+- `_POEMEMORY.BUFFLIST` -> map of active buffs / debuffs, keyed by internal name
+  - `_POEMEMORY.BUFFLIST.HasKey("name")` -> true if that buff is present
+  - `_POEMEMORY.BUFFLIST["name"].DURATION` -> seconds remaining (float)
+  - `_POEMEMORY.BUFFLIST["name"].CHARGES` -> stack / charge count
+  - `_POEMEMORY.BUFFLIST["name"].UISTACK` -> UI stack count
+
+For a percentage, divide — e.g. life% = `_POEMEMORY.CURHP / _POEMEMORY.MAXHP * 100`.
+
+## HELPER FUNCTIONS
+- `PressKey(key, holdMs)` -> press / hold a key for holdMs milliseconds, e.g. PressKey("Q", 50)
+- `THREAD_WAIT(ms)` -> sleep this thread for ms milliseconds
+- `InTown()` -> true while in a town / hideout
+- `CheckPoeWindow()` -> true while the PoE window is focused
+- `LoadSettings()` -> already called in the skeleton; do not remove it
+
+## FINDING BUFF NAMES
+Buff keys are internal names such as "power_charge", "frenzy_charge", "endurance_charge", "tangle_drowning". The user can enable the "Debug" checkbox in the app to print every buff currently on their character, then copy the exact key.
+
+## RULES
+- AutoHotkey v1 syntax only.
+- Output the full script (skeleton + logic), ready to paste — no prose, no markdown code fences.
+- Add short ; comments explaining each block.
+- Expose tunable values (thresholds, delays, keys) as named globals near the top of the script.
+- Only read the memory fields and call the functions listed above.
+- If the request is ambiguous (which key? what threshold?), ask one short clarifying question first.
+
+## STYLE EXAMPLE
+; recast charged staff before it runs out, while power charges are up
+if (_POEMEMORY.BUFFLIST.HasKey("power_charge") AND _POEMEMORY.BUFFLIST["power_charge"].CHARGES > 0) {
+    if (_POEMEMORY.BUFFLIST.HasKey("charged_staff_stack") AND _POEMEMORY.BUFFLIST["charged_staff_stack"].DURATION < 2.0) {
+        PressKey(_SCRIPT_CHARGED_STAFF_KEY, 1000)
+    }
+}
+</script></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
         <footer>
@@ -1765,6 +1867,36 @@
                 });
             }
 
+            /* ---------- ai prompt block (fancy highlight + copy) ---------- */
+            function highlightPrompt(raw) {
+                return raw.split("\n").map(function (line) {
+                    if (/^#\s+/.test(line))  return '<span class="pt">' + escapeHtml(line.replace(/^#\s+/, "")) + '</span>';
+                    if (/^##\s+/.test(line)) return '<span class="ph">' + escapeHtml(line.replace(/^##\s+/, "")) + '</span>';
+                    let h = escapeHtml(line);
+                    h = h.replace(/`([^`]+)`/g, '<span class="fn">$1</span>');                 // inline code
+                    h = h.replace(/"[^"]*"/g, function (m) { return '<span class="s">' + m + '</span>'; }); // strings
+                    h = h.replace(/^(\s*)-\s/, '$1<span class="k">-</span> ');                  // bullet dash
+                    return h;
+                }).join("\n");
+            }
+            function initPrompts() {
+                document.querySelectorAll(".prompt-block").forEach(function (block) {
+                    const pre = block.querySelector("pre.prompt");
+                    if (!pre) return;
+                    const srcEl = pre.querySelector("script");
+                    const raw = (srcEl ? srcEl.textContent : pre.textContent).replace(/^\n/, "").replace(/\s+$/, "");
+                    pre.innerHTML = highlightPrompt(raw);
+                    const btn = block.querySelector(".code-copy");
+                    if (btn) btn.addEventListener("click", function () {
+                        navigator.clipboard.writeText(raw).then(function () {
+                            const old = btn.innerHTML;
+                            btn.innerHTML = '<i class="fa-solid fa-check"></i> copied!';
+                            setTimeout(function () { btn.innerHTML = old; }, 2000);
+                        });
+                    });
+                });
+            }
+
             /* ---------- copy discord id ---------- */
             function copyDiscordID() {
                 const button = document.getElementById("btn-discord-name");
@@ -1907,6 +2039,7 @@
                 document.querySelectorAll(".slideshow").forEach(initSlideshow);
                 loadCodeBlocks();
                 initShots();
+                initPrompts();
             });
         </script>
     </body>
