@@ -1802,8 +1802,8 @@ if (_POEMEMORY.BUFFLIST.HasKey("power_charge") AND _POEMEMORY.BUFFLIST["power_ch
                     }
                     let code = escapeHtml(ci >= 0 ? line.slice(0, ci) : line);
                     const comment = ci >= 0 ? escapeHtml(line.slice(ci)) : "";
+                    code = code.replace(/"[^"]*"/g, m => '<span class="s">' + m + '</span>');       // strings FIRST (before any class="" is inserted)
                     code = code.replace(/(^|\s)(#[A-Za-z]+)\b/g, '$1<span class="k">$2</span>');   // directives
-                    code = code.replace(/"[^"]*"/g, m => '<span class="s">' + m + '</span>');       // strings
                     code = code.replace(/\b([A-Za-z_][A-Za-z0-9_]*)\(/g, '<span class="fn">$1</span>('); // calls
                     code = code.replace(AHK_KW, '<span class="k">$1</span>');                       // keywords
                     code = code.replace(/\b(\d+\.\d+|\d+)\b/g, '<span class="s">$1</span>');         // numbers
@@ -1853,8 +1853,8 @@ if (_POEMEMORY.BUFFLIST.HasKey("power_charge") AND _POEMEMORY.BUFFLIST["power_ch
                     if (/^#\s+/.test(line))  return '<span class="pt">' + escapeHtml(line.replace(/^#\s+/, "")) + '</span>';
                     if (/^##\s+/.test(line)) return '<span class="ph">' + escapeHtml(line.replace(/^##\s+/, "")) + '</span>';
                     let h = escapeHtml(line);
+                    h = h.replace(/"[^"]*"/g, function (m) { return '<span class="s">' + m + '</span>'; }); // strings FIRST (before any class="" is inserted)
                     h = h.replace(/`([^`]+)`/g, '<span class="fn">$1</span>');                 // inline code
-                    h = h.replace(/"[^"]*"/g, function (m) { return '<span class="s">' + m + '</span>'; }); // strings
                     h = h.replace(/^(\s*)-\s/, '$1<span class="k">-</span> ');                  // bullet dash
                     return h;
                 }).join("\n");

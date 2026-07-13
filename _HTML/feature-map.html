@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POE Assistant — Feature Map</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>%E2%9A%A1</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-0: #0b0913; --bg-1: #14101f; --bg-2: #1a1530; --bg-3: #221b3d; --bg-4: #2b2350;
+            --accent: #ff7a18; --accent-2: #ff9d4d;
+            --accent-soft: rgba(255,122,24,0.14); --accent-glow: rgba(255,122,24,0.45);
+            --text: #ece9f5; --muted: #9a93bd; --faint: #6f688f;
+            --border: rgba(255,255,255,0.08); --border-accent: rgba(255,122,24,0.40);
+            --line: rgba(255,255,255,0.16);
+
+            /* pillar accents */
+            --autopot: #ff7a18;
+            --smoother: #a487ff;
+            --overlay: #4c8dff;
+            --tradebot: #6fcf97;
+
+            --font-head: "Chakra Petch", -apple-system, "Segoe UI", sans-serif;
+            --font-body: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+        }
+        * , *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: var(--font-body);
+            color: var(--text);
+            background-color: var(--bg-1);
+            background-image:
+                radial-gradient(900px 600px at 12% -8%, rgba(255,122,24,0.10), transparent 60%),
+                radial-gradient(1100px 700px at 100% 0%, rgba(106,64,200,0.22), transparent 55%),
+                radial-gradient(900px 800px at 50% 120%, rgba(58,44,107,0.30), transparent 60%),
+                linear-gradient(180deg, var(--bg-1), var(--bg-0));
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ---------- page header ---------- */
+        .page-head { text-align: center; padding: 46px 22px 8px; }
+        .brand {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-family: var(--font-head); font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; font-size: 0.9rem; color: var(--muted);
+        }
+        .brand .logo {
+            display: grid; place-items: center; width: 28px; height: 28px;
+            border-radius: 8px; font-size: 0.95rem;
+            background: linear-gradient(135deg, var(--accent), #ff5e00);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .page-head h1 {
+            font-family: var(--font-head); font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: 2px;
+            text-transform: uppercase; margin: 14px 0 6px;
+            background: linear-gradient(180deg, #fff, #cfc7e8);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .page-head p { color: var(--muted); margin: 0; font-size: 1rem; }
+
+        /* ---------- chart scroller ---------- */
+        .chart-scroll { overflow-x: auto; padding: 30px 22px 10px; }
+        .tree { width: fit-content; margin: 0 auto; }
+        .tree ul {
+            position: relative;
+            padding: 26px 0 0;
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+        }
+        .tree li {
+            list-style: none;
+            text-align: center;
+            position: relative;
+            padding: 26px 13px 0;
+        }
+        /* connectors (Meacham) */
+        .tree li::before, .tree li::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 50%;
+            border-top: 2px solid var(--line);
+            width: 50%; height: 26px;
+        }
+        .tree li::after { right: auto; left: 50%; border-left: 2px solid var(--line); }
+        .tree li:only-child::before, .tree li:only-child::after { display: none; }
+        .tree li:only-child { padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 2px solid var(--line); border-radius: 0 8px 0 0; }
+        .tree li:first-child::after { border-radius: 8px 0 0 0; }
+        .tree ul ul::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 50%;
+            border-left: 2px solid var(--line);
+            width: 0; height: 26px;
+        }
+        .tree > ul { padding-top: 0; }
+
+        /* ---------- root node ---------- */
+        .node-root {
+            display: inline-flex; align-items: center; gap: 13px;
+            padding: 16px 32px; border-radius: 14px;
+            font-family: var(--font-head); font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase; font-size: 1.3rem; color: #fff;
+            background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+            border: 1px solid var(--border-accent);
+            box-shadow: 0 0 0 1px var(--border-accent), 0 12px 44px -14px var(--accent-glow);
+        }
+        .node-root .logo {
+            display: grid; place-items: center; width: 34px; height: 34px;
+            border-radius: 9px; font-size: 1.1rem; color: #1a0e00;
+            background: linear-gradient(135deg, var(--accent), #ff5e00);
+            box-shadow: 0 0 18px var(--accent-glow);
+        }
+
+        /* ---------- pillar (branch) card ---------- */
+        .pillar {
+            display: inline-block;
+            vertical-align: top;
+            width: 256px;
+            text-align: left;
+            background: linear-gradient(180deg, var(--bg-2), rgba(20,16,31,0.6));
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--c);
+            border-radius: 13px;
+            overflow: hidden;
+            box-shadow: 0 20px 46px -32px #000;
+        }
+        .pillar-head {
+            display: flex; align-items: center; gap: 11px;
+            padding: 14px 16px;
+            background: color-mix(in srgb, var(--c) 14%, var(--bg-2));
+            border-bottom: 1px solid var(--border);
+        }
+        .pillar-head .dot {
+            width: 11px; height: 11px; border-radius: 50%; flex: none;
+            background: var(--c); box-shadow: 0 0 12px var(--c);
+        }
+        .pillar-head .name {
+            font-family: var(--font-head); font-weight: 700;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            font-size: 1.02rem; color: #fff;
+        }
+        .feats { padding: 12px; display: flex; flex-direction: column; gap: 7px; }
+        .feat {
+            position: relative;
+            padding: 9px 11px 9px 26px;
+            background: var(--bg-1);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.82rem;
+            line-height: 1.45;
+            color: var(--muted);
+        }
+        .feat::before {
+            content: "";
+            position: absolute;
+            left: 11px; top: 14px;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--c);
+        }
+        .feat b { color: var(--text); font-weight: 600; }
+
+        footer {
+            text-align: center;
+            color: var(--faint);
+            font-size: 0.82rem;
+            padding: 26px 22px 44px;
+        }
+        footer a { color: var(--accent-2); text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <header class="page-head">
+        <div class="brand"><span class="logo">⚡</span> POE Assistant</div>
+        <h1>Feature Map</h1>
+        <p>everything the assistant does, at a glance</p>
+    </header>
+
+    <div class="chart-scroll">
+        <div class="tree">
+            <ul>
+                <li>
+                    <div class="node-root"><span class="logo">⚡</span> Assistant</div>
+                    <ul>
+                        <!-- AUTOPOT -->
+                        <li>
+                            <div class="pillar" style="--c: var(--autopot)">
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Autopot</span></div>
+                                <div class="feats">
+                                    <div class="feat">Controller Support</div>
+                                    <div class="feat">Script Engine for light automation</div>
+                                    <div class="feat">Send keypresses on specific conditions</div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- SMOOTHER -->
+                        <li>
+                            <div class="pillar" style="--c: var(--smoother)">
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Smoother</span></div>
+                                <div class="feats">
+                                    <div class="feat">Minimap Reveal</div>
+                                    <div class="feat">Zoomout</div>
+                                    <div class="feat">Remove Atlas Fog <b>(see all nodes at all times)</b></div>
+                                    <div class="feat">Presets for better FPS</div>
+                                    <div class="feat">Blackscreen for <b>botting</b></div>
+                                    <div class="feat">Individual removal of skills and effects</div>
+                                    <div class="feat">Custom colorization of item stats</div>
+                                    <div class="feat">MTX swap</div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- OVERLAY -->
+                        <li>
+                            <div class="pillar" style="--c: var(--overlay)">
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Overlay</span></div>
+                                <div class="feats">
+                                    <div class="feat"><b>Preload alert:</b> get notified on map start for your favorite league content</div>
+                                    <div class="feat">Display enemy positions on the minimap</div>
+                                    <div class="feat">Display important locations like Boss-Arenas</div>
+                                    <div class="feat">Get warned if a magic or rare monster is nearby, with an fps-like hit indicator</div>
+                                    <div class="feat">Watch out for specific rare/unique monsters with certain monster mods</div>
+                                    <div class="feat">Atlas nodes marked with icons for specific content <b>(inf range)</b></div>
+                                    <div class="feat">Get specific area information</div>
+                                    <div class="feat">Track your XP per zone and XP per hour</div>
+                                    <div class="feat">See live data so you can set up your rules as you like!</div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- TRADEBOT -->
+                        <li>
+                            <div class="pillar" style="--c: var(--tradebot)">
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Tradebot</span></div>
+                                <div class="feats">
+                                    <div class="feat">Instantly buys the item you traveled for</div>
+                                    <div class="feat">An additional browser addon does that for you automatically</div>
+                                    <div class="feat">LiveSearch for the night — wake up with your missing ring slot</div>
+                                    <div class="feat">Never miss out while not gaming ♥</div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        POE Assistant · <a href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">join the Discord</a>
+    </footer>
+</body>
+</html>
