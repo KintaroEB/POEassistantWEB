@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POE Assistant — Scripting API (POEMEMORY)</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>%E2%9A%A1</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-0: #0b0913; --bg-1: #14101f; --bg-2: #1a1530; --bg-3: #221b3d; --bg-4: #2b2350;
+            --accent: #ff7a18; --accent-2: #ff9d4d;
+            --accent-soft: rgba(255,122,24,0.14); --accent-glow: rgba(255,122,24,0.45);
+            --text: #ece9f5; --muted: #9a93bd; --faint: #6f688f;
+            --border: rgba(255,255,255,0.08); --border-accent: rgba(255,122,24,0.40);
+            --border-soft: rgba(255,255,255,0.05);
+            --line: rgba(255,255,255,0.16);
+            --code-bg: #0d0a17;
+
+            --font-head: "Chakra Petch", -apple-system, "Segoe UI", sans-serif;
+            --font-body: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100vh;
+            font-family: var(--font-body); color: var(--text);
+            background-color: var(--bg-1);
+            background-image:
+                radial-gradient(900px 600px at 12% -8%, rgba(255,122,24,0.10), transparent 60%),
+                radial-gradient(1100px 700px at 100% 0%, rgba(106,64,200,0.22), transparent 55%),
+                radial-gradient(900px 800px at 50% 120%, rgba(58,44,107,0.30), transparent 60%),
+                linear-gradient(180deg, var(--bg-1), var(--bg-0));
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        /* header */
+        .page-head { text-align: center; padding: 46px 22px 8px; }
+        .brand {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-family: var(--font-head); font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; font-size: 0.9rem; color: var(--muted);
+        }
+        .brand .logo {
+            display: grid; place-items: center; width: 28px; height: 28px;
+            border-radius: 8px; font-size: 0.95rem;
+            background: linear-gradient(135deg, var(--accent), #ff5e00);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .page-head h1 {
+            font-family: var(--font-head); font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: 2px;
+            text-transform: uppercase; margin: 14px 0 6px;
+            background: linear-gradient(180deg, #fff, #cfc7e8);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .page-head p { color: var(--muted); margin: 0; font-size: 1rem; }
+
+        /* layout */
+        .container { max-width: 940px; margin: 0 auto; padding: 8px 22px 0; }
+
+        /* sticky in-page nav */
+        .toc {
+            position: sticky; top: 0; z-index: 5;
+            display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+            padding: 14px 12px; margin: 26px 0 8px;
+            background: rgba(11,9,19,0.72); backdrop-filter: blur(8px);
+            border: 1px solid var(--border); border-radius: 12px;
+        }
+        .toc a {
+            font-family: var(--font-head); font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 1px; text-transform: uppercase; text-decoration: none;
+            color: var(--muted); padding: 5px 11px; border-radius: 7px;
+            border: 1px solid transparent; transition: color .15s, border-color .15s, background .15s;
+        }
+        .toc a:hover { color: var(--text); border-color: var(--border); background: var(--accent-soft); }
+
+        /* section card */
+        .card {
+            background: linear-gradient(180deg, var(--bg-2), rgba(20,16,31,0.55));
+            border: 1px solid var(--border); border-top: 3px solid var(--c, var(--accent));
+            border-radius: 14px; padding: 22px 24px; margin: 20px 0;
+            box-shadow: 0 20px 46px -32px #000;
+        }
+        .card > h2 {
+            font-family: var(--font-head); font-weight: 700; letter-spacing: 1.4px;
+            text-transform: uppercase; font-size: 1.15rem; margin: 0 0 4px; color: #fff;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .card > h2 .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c, var(--accent)); box-shadow: 0 0 12px var(--c, var(--accent)); flex: none; }
+        .card .sub { color: var(--faint); font-size: 0.86rem; margin: 0 0 14px; }
+        .card p { color: var(--muted); margin: 10px 0; }
+        .card h3 {
+            font-family: var(--font-head); font-weight: 600; letter-spacing: .6px;
+            font-size: 0.98rem; color: var(--accent-2); margin: 22px 0 8px; text-transform: none;
+        }
+        .card b { color: var(--text); font-weight: 600; }
+        code.inl {
+            font-family: var(--font-mono); font-size: 0.84em;
+            background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+            border-radius: 5px; padding: 1px 6px; color: #ffcfa0;
+        }
+
+        /* member list */
+        .members { margin: 6px 0 0; }
+        .member { padding: 12px 0; border-bottom: 1px solid var(--border-soft); }
+        .member:last-child { border-bottom: none; }
+        .member .sig { font-family: var(--font-mono); font-size: 0.9rem; }
+        .member .sig .name { color: #ffb26b; font-weight: 500; }
+        .member .sig .args { color: var(--muted); }
+        .member .sig .ret { color: var(--faint); }
+        .member .sig .ret::before { content: "→ "; }
+        .member .desc { color: var(--muted); font-size: 0.9rem; margin-top: 5px; }
+        .member .desc b { color: var(--text); }
+
+        /* callout note */
+        .note {
+            border-left: 3px solid var(--nc, var(--accent));
+            background: rgba(255,255,255,0.03);
+            border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 16px 0;
+            color: var(--muted); font-size: 0.9rem;
+        }
+        .note.warn { --nc: #ff5e6c; }
+        .note b { color: var(--text); }
+        .note .lead { display: block; font-family: var(--font-head); font-weight: 600; letter-spacing: .5px; color: var(--text); margin-bottom: 4px; text-transform: uppercase; font-size: .72rem; }
+
+        /* code block */
+        pre.lua {
+            background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px; overflow-x: auto;
+            font-family: var(--font-mono); font-size: 0.84rem; line-height: 1.65;
+            color: #cdc7e6; margin: 12px 0;
+        }
+        pre.lua .c { color: #6f688f; font-style: italic; }
+        pre.lua .s { color: #c3e88d; }
+        pre.lua .k { color: #c792ea; }
+        pre.lua .g { color: #ffb26b; }
+        pre.lua .n { color: #f78c6c; }
+
+        /* small key/pill chips */
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+        .kbd {
+            font-family: var(--font-mono); font-size: 0.78rem; color: var(--text);
+            background: var(--bg-1); border: 1px solid var(--border);
+            border-bottom-width: 2px; border-radius: 6px; padding: 3px 9px;
+        }
+
+        footer { text-align: center; color: var(--faint); font-size: 0.82rem; padding: 34px 22px 50px; }
+        footer a { color: var(--accent-2); text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+
+        ::selection { background: rgba(255,122,24,0.28); }
+    </style>
+</head>
+<body>
+    <header class="page-head">
+        <div class="brand"><span class="logo">⚡</span> POE Assistant</div>
+        <h1>Scripting API</h1>
+        <p>everything you can read and do from a Lua script — the <code class="inl">POEMEMORY</code> reference</p>
+    </header>
+
+    <div class="container">
+
+        <nav class="toc">
+            <a href="#intro">Overview</a>
+            <a href="#lua">Lua &amp; the object</a>
+            <a href="#player">Player</a>
+            <a href="#area">Area</a>
+            <a href="#monsters">World.Monsters</a>
+            <a href="#handle">Monster handle</a>
+            <a href="#actions">Actions</a>
+            <a href="#input">Input &amp; Mouse</a>
+            <a href="#keys">Keys &amp; buttons</a>
+            <a href="#notes">Gotchas</a>
+        </nav>
+
+        <!-- OVERVIEW -->
+        <section class="card" id="intro" style="--c: var(--accent)">
+            <h2><span class="dot"></span>Overview</h2>
+            <p class="sub">what scripting is, and the one rule that shapes everything</p>
+            <p>A script is a small <b>Lua</b> program that runs against your <b>live</b> game data. It reads the game through one read-only object — <code class="inl">POEMEMORY</code> — and reacts: pop a toast, play a sound, draw a box on a monster, or (only if you opt in) press a key or click the mouse.</p>
+            <p>Scripts are plain <code class="inl">.lua</code> files in <code class="inl">settings_overlay/scripting/</code>, managed from the <b>SCRIPTING</b> tab in the dashboard (enable/disable, order, edit, live log). Drop a file in the folder or hit <b>+ new</b>.</p>
+
+            <h3>Four things to know up front</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">Read-only</span></div><div class="desc">Scripts <b>observe</b> the game; there is no way to write to it. <code class="inl">POEMEMORY</code> has no setters.</div></div>
+                <div class="member"><div class="sig"><span class="name">Sandboxed</span></div><div class="desc">No files, no network, no OS access — a shared script can't touch your machine. Only the API on this page exists.</div></div>
+                <div class="member"><div class="sig"><span class="name">Per-tick</span></div><div class="desc">You write one function, <code class="inl">tick()</code>, and it runs on a loop (~20&times;/second by default; adjustable in the tab).</div></div>
+                <div class="member"><div class="sig"><span class="name">Input is opt-in</span></div><div class="desc">Keyboard/mouse output is <b>OFF by default</b>, only fires while the game is focused, is rate-limited, and has a panic key. See <a href="#input" style="color:var(--accent-2)">Input &amp; Mouse</a>.</div></div>
+            </div>
+        </section>
+
+        <!-- LUA -->
+        <section class="card" id="lua" style="--c: #c792ea">
+            <h2><span class="dot"></span>Lua &amp; the object model</h2>
+            <p class="sub">a 2-minute primer — enough Lua to be productive</p>
+
+            <p>Lua is small and readable. Here's essentially everything you need:</p>
+<pre class="lua">-- comments start with two dashes
+local x = 10                 -- a variable (use "local")
+if x &gt;= 5 and x ~= 7 then    -- and / or / not ; "not equal" is ~=
+  log("x is " .. x)          -- ".." joins strings
+end
+
+for i = 1, 3 do end                       -- numeric loop
+for _, m in ipairs(someList) do end        -- loop a list (array)
+
+function greet(who)          -- a function
+  return "hi " .. who
+end</pre>
+
+            <h3>How you talk to <code class="inl">POEMEMORY</code></h3>
+            <p><code class="inl">POEMEMORY</code>, <code class="inl">Input</code> and <code class="inl">Mouse</code> are <b>objects</b>. Reading a <b>value</b> (a property) uses a dot and no parentheses. Calling a <b>function</b> (a method) uses parentheses; methods on an object take a colon (a dot also works):</p>
+<pre class="lua">local lvl  = POEMEMORY.Player.Level                 -- property: just a value
+local hp   = POEMEMORY.Player.Life.Pct              -- nested property
+local near = POEMEMORY.World.Monsters:CountWithin(30)  -- method: parentheses (colon)</pre>
+            <p><b>Rule of thumb:</b> if it has <code class="inl">()</code> in this reference, it's a method — call it. If it doesn't, it's a value — read it.</p>
+
+            <h3>The <code class="inl">tick()</code> loop &amp; remembering things</h3>
+            <p>Define <code class="inl">function tick() ... end</code>. It runs every tick. Anything you declare <b>outside</b> <code class="inl">tick()</code> persists across ticks — that's how you keep state (like a timestamp):</p>
+<pre class="lua">local last = 0                 -- lives across ticks
+
+function tick()
+  if now() - last &lt; 1000 then return end   -- not yet a second? bail
+  last = now()
+  -- ... this block runs at most once per second
+end</pre>
+            <div class="note"><span class="lead">No sleep</span>There is deliberately no blocking <code class="inl">sleep</code> (it would freeze the engine), and the sandbox has no <code class="inl">os.clock</code>. To pace yourself, use <code class="inl">now()</code> (milliseconds) with the pattern above.</div>
+
+            <h3>Nil — always check</h3>
+            <p>Some methods return <b>nothing</b> (<code class="inl">nil</code>) when there's nothing to give — e.g. <code class="inl">Nearest()</code> when no monster is loaded. Guard it:</p>
+<pre class="lua">local m = POEMEMORY.World.Monsters:Nearest()
+if m then                      -- only use m when it exists
+  log(m.Metadata)
+end</pre>
+        </section>
+
+        <!-- PLAYER -->
+        <section class="card" id="player" style="--c: #6fcf97">
+            <h2><span class="dot"></span>POEMEMORY.Player</h2>
+            <p class="sub">you — vitals, level, position</p>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">.Name</span> <span class="ret">string</span></div><div class="desc">Your character name.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Level</span> <span class="ret">number</span></div><div class="desc">Character level.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Xp</span> <span class="ret">number</span></div><div class="desc">Total experience.</div></div>
+                <div class="member"><div class="sig"><span class="name">.X</span> <span class="ret">number</span> &nbsp; <span class="name">.Y</span> <span class="ret">number</span></div><div class="desc">Your position in <b>grid units</b> (useful for movement / idle detection between ticks).</div></div>
+                <div class="member"><div class="sig"><span class="name">.IsAlive</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> while you have positive life.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Life</span> &nbsp; <span class="name">.Mana</span> &nbsp; <span class="name">.Es</span> <span class="ret">pool</span></div><div class="desc">Three vital pools, each with the fields below. <code class="inl">.Es</code> is energy shield.</div></div>
+            </div>
+
+            <h3>Each pool (<code class="inl">.Life</code> / <code class="inl">.Mana</code> / <code class="inl">.Es</code>)</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">.Current</span> <span class="ret">number</span></div><div class="desc">Current value.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Max</span> <span class="ret">number</span></div><div class="desc">Usable (unreserved) maximum.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Pct</span> <span class="ret">number</span></div><div class="desc">Current as a percentage of the usable max (0–100). <b>The one you'll use most.</b></div></div>
+                <div class="member"><div class="sig"><span class="name">.Present</span> <span class="ret">bool</span></div><div class="desc">Whether the pool exists — chiefly meaningful for <code class="inl">.Es</code> (true only when you actually have an ES pool).</div></div>
+            </div>
+<pre class="lua">if POEMEMORY.Player.Life.Pct &lt; 50 then notify("low life!", "ff4040") end
+if POEMEMORY.Player.Es.Present and POEMEMORY.Player.Es.Pct &lt; 25 then notify("ES down") end</pre>
+        </section>
+
+        <!-- AREA -->
+        <section class="card" id="area" style="--c: #4c8dff">
+            <h2><span class="dot"></span>POEMEMORY.Area</h2>
+            <p class="sub">where you are right now</p>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">.Name</span> <span class="ret">string</span></div><div class="desc">The zone's display name (may be blank in some cases — prefer <code class="inl">.Code</code> to match on).</div></div>
+                <div class="member"><div class="sig"><span class="name">.Code</span> <span class="ret">string</span></div><div class="desc">The internal area code (e.g. a map/hideout identifier). The <b>reliable</b> thing to test against.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Level</span> <span class="ret">number</span></div><div class="desc">Area/monster level.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Hash</span> <span class="ret">number</span></div><div class="desc">Unique per zone instance — changes every time you enter a new instance.</div></div>
+                <div class="member"><div class="sig"><span class="name">.IsMap</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> in a farmable combat zone (a map).</div></div>
+                <div class="member"><div class="sig"><span class="name">.InTown</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> in a town/hideout. Handy to disable automation while you're safe.</div></div>
+                <div class="member"><div class="sig"><span class="name">.ChangeCount</span> <span class="ret">number</span></div><div class="desc">Increments on every zone transition — detect "just changed zone" by watching it.</div></div>
+            </div>
+<pre class="lua">if POEMEMORY.Area.InTown then return end   -- do nothing in town
+if POEMEMORY.Area.Code:find("Cavern") then notify("cavern map!") end</pre>
+        </section>
+
+        <!-- MONSTERS -->
+        <section class="card" id="monsters" style="--c: #ff5e6c">
+            <h2><span class="dot"></span>POEMEMORY.World.Monsters</h2>
+            <p class="sub">the enemies loaded around you</p>
+            <div class="note"><span class="lead">Scope</span>These only see <b>hostile, living</b> monsters inside the <b>loaded area around you</b> (roughly what the radar draws) — not the whole map. Distances are in <b>grid units</b> (the same unit as the overlay's alert ranges).</div>
+
+            <h3>Counts (return a number)</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">:Count</span><span class="args">()</span> <span class="ret">number</span></div><div class="desc">All loaded hostile-living monsters.</div></div>
+                <div class="member"><div class="sig"><span class="name">:CountWithin</span><span class="args">(range)</span> <span class="ret">number</span></div><div class="desc">How many are within <b>range</b> grid units of you.</div></div>
+                <div class="member"><div class="sig"><span class="name">:MagicCountWithin</span><span class="args">(range)</span> &nbsp; <span class="name">:RareCountWithin</span><span class="args">(range)</span> &nbsp; <span class="name">:UniqueCountWithin</span><span class="args">(range)</span> <span class="ret">number</span></div><div class="desc">Same, filtered to a rarity.</div></div>
+                <div class="member"><div class="sig"><span class="name">:CountMatching</span><span class="args">(text, range)</span> <span class="ret">number</span></div><div class="desc">Within range whose <b>metadata</b> contains <b>text</b> (case-insensitive substring).</div></div>
+                <div class="member"><div class="sig"><span class="name">:NearestDistance</span><span class="args">()</span> <span class="ret">number</span></div><div class="desc">Distance to the closest monster (a very large number if none).</div></div>
+            </div>
+
+            <h3>Handles (return a monster, or a list)</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">:Nearest</span><span class="args">()</span> <span class="ret">handle | nil</span></div><div class="desc">The closest monster as a <a href="#handle" style="color:var(--accent-2)">handle</a>, or <code class="inl">nil</code> if none are loaded.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Within</span><span class="args">(range)</span> <span class="ret">list of handles</span></div><div class="desc">Every monster within range — loop it with <code class="inl">ipairs</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Matching</span><span class="args">(text, range)</span> <span class="ret">list of handles</span></div><div class="desc">Every monster within range whose metadata contains <b>text</b>.</div></div>
+            </div>
+<pre class="lua">-- warn on a swarm
+if POEMEMORY.World.Monsters:CountWithin(35) &gt;= 8 then notify("swarm!", "ff5555") end
+
+-- box every unique nearby
+for _, m in ipairs(POEMEMORY.World.Monsters:Within(45)) do
+  if m.IsUnique then m:Mark("a020f0") end
+end</pre>
+        </section>
+
+        <!-- HANDLE -->
+        <section class="card" id="handle" style="--c: #ffb26b">
+            <h2><span class="dot"></span>The monster handle</h2>
+            <p class="sub">what <code class="inl">:Nearest()</code> / <code class="inl">:Within()</code> / <code class="inl">:Matching()</code> give you</p>
+            <p>A handle is a frozen snapshot of one monster for this tick. The same monster keeps the same <code class="inl">.Id</code> across ticks, so you can track it.</p>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">.Metadata</span> <span class="ret">string</span></div><div class="desc">Full metadata path (what you match rules against).</div></div>
+                <div class="member"><div class="sig"><span class="name">.Rarity</span> <span class="ret">string</span></div><div class="desc"><code class="inl">"Normal"</code> / <code class="inl">"Magic"</code> / <code class="inl">"Rare"</code> / <code class="inl">"Unique"</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Id</span> <span class="ret">number</span></div><div class="desc">Stable per spawn — use it to track a specific monster tick to tick.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Distance</span> <span class="ret">number</span></div><div class="desc">Grid units from you. <b>The workhorse.</b></div></div>
+                <div class="member"><div class="sig"><span class="name">.ScreenX</span> <span class="ret">number</span> &nbsp; <span class="name">.ScreenY</span> <span class="ret">number</span></div><div class="desc">Where the monster is on screen, in overlay-window pixels — the exact coordinates <code class="inl">Mouse</code> takes. Only valid when <code class="inl">.OnScreen</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">.OnScreen</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> when the monster projects on screen. <b>Always check before using ScreenX/ScreenY.</b></div></div>
+                <div class="member"><div class="sig"><span class="name">.Life.Current</span> &nbsp; <span class="name">.Life.Max</span> &nbsp; <span class="name">.Life.Pct</span> <span class="ret">number</span></div><div class="desc">The monster's HP (percent 0–100).</div></div>
+                <div class="member"><div class="sig"><span class="name">.IsAlive</span> <span class="ret">bool</span></div><div class="desc">Alive (positive HP).</div></div>
+                <div class="member"><div class="sig"><span class="name">.IsUnique</span> <span class="ret">bool</span> &nbsp; <span class="name">.UniqueName</span> <span class="ret">string | nil</span></div><div class="desc">Whether it's a unique monster, and its name if so.</div></div>
+                <div class="member"><div class="sig"><span class="name">.IsFriendly</span> <span class="ret">bool</span></div><div class="desc">Your minions / allies (already excluded from the <code class="inl">Monsters</code> queries, but exposed here too).</div></div>
+                <div class="member"><div class="sig"><span class="name">:HasMod</span><span class="args">(text)</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> if any of the monster's mod ids contains <b>text</b> (case-insensitive).</div></div>
+                <div class="member"><div class="sig"><span class="name">.Mods</span> <span class="ret">list of strings</span></div><div class="desc">All the monster's mod ids (rares/uniques). Advanced.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Mark</span><span class="args">(color [, width, height, stroke])</span></div><div class="desc">Draw a hollow box on the monster's on-screen position, in <b>color</b> (<code class="inl">"ffcc00"</code>). It stays glued to the monster while you keep calling it. Size defaults to 70&times;70 with a 3px edge.</div></div>
+            </div>
+<pre class="lua">local m = POEMEMORY.World.Monsters:Nearest()
+if m and m.Rarity == "Rare" and m.Distance &lt; 25 then
+  m:Mark("ff9030")                       -- highlight it
+  log(m.Metadata .. "  " .. math.floor(m.Life.Pct) .. "%")
+end</pre>
+        </section>
+
+        <!-- ACTIONS -->
+        <section class="card" id="actions" style="--c: #a487ff">
+            <h2><span class="dot"></span>Actions — notify, sound, log, now</h2>
+            <p class="sub">the safe outputs — no gate, available to every script</p>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">notify</span><span class="args">(text [, color])</span></div><div class="desc">Pop an on-screen toast. <b>color</b> is a hex string like <code class="inl">"ff5555"</code> (optional). Calling it again with the same text just keeps that toast up rather than stacking.</div></div>
+                <div class="member"><div class="sig"><span class="name">sound</span><span class="args">([variant])</span></div><div class="desc">Play a chime — <b>variant</b> 1–3 for the built-in sounds, 4 for your custom <code class="inl">alert.wav</code>. Uses your global alert volume, and is cooldown-limited so it can't machine-gun.</div></div>
+                <div class="member"><div class="sig"><span class="name">log</span><span class="args">(message)</span></div><div class="desc">Write a line to the <b>log</b> panel in the SCRIPTING tab. Your main debugging tool.</div></div>
+                <div class="member"><div class="sig"><span class="name">now</span><span class="args">()</span> <span class="ret">number</span></div><div class="desc">Monotonic milliseconds — the clock you throttle with (there's no <code class="inl">sleep</code>). See the <a href="#lua" style="color:var(--accent-2)">once-per-second pattern</a>.</div></div>
+            </div>
+<pre class="lua">notify("rare pack ahead", "ffcc00")
+sound(2)
+log("player at " .. POEMEMORY.Player.X .. ", " .. POEMEMORY.Player.Y)</pre>
+        </section>
+
+        <!-- INPUT -->
+        <section class="card" id="input" style="--c: #ff5e6c">
+            <h2><span class="dot"></span>Input &amp; Mouse</h2>
+            <p class="sub">the gated outputs — single, discrete keystrokes and clicks</p>
+
+            <div class="note warn">
+                <span class="lead">⚠ Read this before using input</span>
+                Input is <b>OFF by default</b>. Turn on <b>input enabled</b> in the SCRIPTING tab. It only fires while the <b>game window is focused</b>, and it's <b>rate-limited</b> (about 7–8 actions per second — a single tick may send a short combo, then it's briefly blocked). Bind a <b>panic key</b> in the HOTKEYS tab first — it disables all script input instantly, even while alt-tabbed.
+            </div>
+
+            <h3>Input <span style="color:var(--faint);font-weight:400">— keyboard</span></h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">Input.Press</span><span class="args">(key)</span></div><div class="desc">Tap a key (press &amp; release).</div></div>
+                <div class="member"><div class="sig"><span class="name">Input.Hold</span><span class="args">(key, ms)</span></div><div class="desc">Hold a key down, release after <b>ms</b> milliseconds (capped at 2000).</div></div>
+                <div class="member"><div class="sig"><span class="name">Input.Down</span><span class="args">(key)</span> &nbsp; <span class="name">Input.Up</span><span class="args">(key)</span></div><div class="desc">Press / release explicitly — for combos (hold Shift, click, release Shift).</div></div>
+            </div>
+
+            <h3>Mouse</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">Mouse.Move</span><span class="args">(x, y)</span></div><div class="desc">Move the cursor to <b>x, y</b> — the same pixel space as a monster's <code class="inl">.ScreenX</code>/<code class="inl">.ScreenY</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">Mouse.Click</span><span class="args">([button])</span></div><div class="desc">Click at the current position. <b>button</b> = <code class="inl">"left"</code> (default) / <code class="inl">"right"</code> / <code class="inl">"middle"</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">Mouse.ClickAt</span><span class="args">(x, y [, button])</span></div><div class="desc">Move to <b>x, y</b> then click. The one you'll use to attack a target.</div></div>
+                <div class="member"><div class="sig"><span class="name">Mouse.Down</span><span class="args">([button])</span> &nbsp; <span class="name">Mouse.Up</span><span class="args">([button])</span></div><div class="desc">Press / release a mouse button explicitly.</div></div>
+                <div class="member"><div class="sig"><span class="name">Mouse.Wheel</span><span class="args">(delta)</span></div><div class="desc">Scroll — 120 is one notch; sign is direction.</div></div>
+            </div>
+<pre class="lua">-- right-click the closest on-screen monster within melee range, once/sec
+local MELEE = 20
+local last = 0
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  local m = POEMEMORY.World.Monsters:Nearest()
+  if m and m.OnScreen and m.Distance &lt;= MELEE then
+    Mouse.ClickAt(m.ScreenX, m.ScreenY, "right")
+  end
+end</pre>
+        </section>
+
+        <!-- KEYS -->
+        <section class="card" id="keys" style="--c: #6fcf97">
+            <h2><span class="dot"></span>Key names &amp; mouse buttons</h2>
+            <p class="sub">what to pass to <code class="inl">Input.*</code> and <code class="inl">Mouse.*</code></p>
+            <h3>Keys</h3>
+            <p>Single letters and digits are themselves: <code class="inl">"q"</code>, <code class="inl">"1"</code>. Named keys:</p>
+            <div class="chips">
+                <span class="kbd">space</span><span class="kbd">enter</span><span class="kbd">esc</span><span class="kbd">tab</span><span class="kbd">backspace</span><span class="kbd">delete</span><span class="kbd">insert</span>
+                <span class="kbd">home</span><span class="kbd">end</span><span class="kbd">pageup</span><span class="kbd">pagedown</span>
+                <span class="kbd">up</span><span class="kbd">down</span><span class="kbd">left</span><span class="kbd">right</span>
+                <span class="kbd">shift</span><span class="kbd">ctrl</span><span class="kbd">alt</span>
+                <span class="kbd">f1</span><span class="kbd">…</span><span class="kbd">f12</span>
+            </div>
+            <h3>Mouse buttons</h3>
+            <div class="chips">
+                <span class="kbd">left</span><span class="kbd">right</span><span class="kbd">middle</span>
+            </div>
+        </section>
+
+        <!-- NOTES -->
+        <section class="card" id="notes" style="--c: var(--accent)">
+            <h2><span class="dot"></span>Gotchas &amp; good habits</h2>
+            <p class="sub">the things that trip people up</p>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">Grid units aren't obvious</span></div><div class="desc">There's no fixed pixel mapping. To find your melee/range number, temporarily <code class="inl">notify("d "..math.floor(m.Distance))</code> and read it at the distance you care about.</div></div>
+                <div class="member"><div class="sig"><span class="name">Screen coords are ~1 frame old</span></div><div class="desc">Fine for click-to-target; not frame-perfect aim. Always gate on <code class="inl">.OnScreen</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">Loaded bubble only</span></div><div class="desc"><code class="inl">World.Monsters</code> sees what's loaded near you, not the far side of the map.</div></div>
+                <div class="member"><div class="sig"><span class="name">Keep <code class="inl" style="color:#ffcfa0">tick()</code> light</span></div><div class="desc">It runs constantly. A script that loops forever is caught by a watchdog and disabled after repeated errors — check the log.</div></div>
+                <div class="member"><div class="sig"><span class="name">Prefer <code class="inl" style="color:#ffcfa0">.Code</code> over <code class="inl" style="color:#ffcfa0">.Name</code></span></div><div class="desc">Zone/monster display names can differ from what you match on; the code/metadata are the reliable strings.</div></div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        POE Assistant · Scripting API · <a href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">join the Discord</a>
+    </footer>
+
+    <script>
+    // Lightweight Lua highlighter for <pre class="lua"> blocks (same token colors as the in-app editor).
+    (function () {
+        var KW = /^(and|break|do|else|elseif|end|false|for|function|goto|if|in|local|nil|not|or|repeat|return|then|true|until|while)$/;
+        var GL = /^(POEMEMORY|Input|Mouse|notify|sound|log|now|ipairs|pairs|math|string|table|tostring|tonumber)$/;
+        function esc(s){ return s.replace(/[&<>]/g, function(c){ return c === "&" ? "&amp;" : c === "<" ? "&lt;" : "&gt;"; }); }
+        var re = /(--[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|([A-Za-z_]\w*)|(0x[0-9a-fA-F]+|\d+\.?\d*)/g;
+        document.querySelectorAll("pre.lua").forEach(function (pre) {
+            var src = pre.textContent, out = "", last = 0, m;
+            while ((m = re.exec(src))) {
+                out += esc(src.slice(last, m.index));
+                var t = m[0], cls = "";
+                if (m[1]) cls = "c";
+                else if (m[2]) cls = "s";
+                else if (m[3]) cls = KW.test(t) ? "k" : (GL.test(t) ? "g" : "");
+                else if (m[4]) cls = "n";
+                out += cls ? ('<span class="' + cls + '">' + esc(t) + "</span>") : esc(t);
+                last = m.index + t.length;
+            }
+            out += esc(src.slice(last));
+            pre.innerHTML = out;
+        });
+    })();
+    </script>
+</body>
+</html>

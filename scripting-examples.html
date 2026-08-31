@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>POE Assistant — Scripting Examples</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>%E2%9A%A1</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-0: #0b0913; --bg-1: #14101f; --bg-2: #1a1530; --bg-3: #221b3d; --bg-4: #2b2350;
+            --accent: #ff7a18; --accent-2: #ff9d4d;
+            --accent-soft: rgba(255,122,24,0.14); --accent-glow: rgba(255,122,24,0.45);
+            --text: #ece9f5; --muted: #9a93bd; --faint: #6f688f;
+            --border: rgba(255,255,255,0.08); --border-accent: rgba(255,122,24,0.40);
+            --border-soft: rgba(255,255,255,0.05);
+            --code-bg: #0d0a17;
+            --safe: #6fcf97; --danger: #ff5e6c;
+
+            --font-head: "Chakra Petch", -apple-system, "Segoe UI", sans-serif;
+            --font-body: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+            --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100vh;
+            font-family: var(--font-body); color: var(--text);
+            background-color: var(--bg-1);
+            background-image:
+                radial-gradient(900px 600px at 12% -8%, rgba(255,122,24,0.10), transparent 60%),
+                radial-gradient(1100px 700px at 100% 0%, rgba(106,64,200,0.22), transparent 55%),
+                radial-gradient(900px 800px at 50% 120%, rgba(58,44,107,0.30), transparent 60%),
+                linear-gradient(180deg, var(--bg-1), var(--bg-0));
+            background-attachment: fixed; -webkit-font-smoothing: antialiased; line-height: 1.6;
+        }
+
+        .page-head { text-align: center; padding: 46px 22px 8px; }
+        .brand {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-family: var(--font-head); font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; font-size: 0.9rem; color: var(--muted);
+        }
+        .brand .logo {
+            display: grid; place-items: center; width: 28px; height: 28px;
+            border-radius: 8px; font-size: 0.95rem;
+            background: linear-gradient(135deg, var(--accent), #ff5e00); box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .page-head h1 {
+            font-family: var(--font-head); font-weight: 700;
+            font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: 2px;
+            text-transform: uppercase; margin: 14px 0 6px;
+            background: linear-gradient(180deg, #fff, #cfc7e8);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .page-head p { color: var(--muted); margin: 0; font-size: 1rem; }
+        .page-head .back { display: inline-block; margin-top: 14px; font-size: 0.82rem; color: var(--accent-2); text-decoration: none; }
+        .page-head .back:hover { color: var(--accent); }
+
+        .container { max-width: 860px; margin: 0 auto; padding: 8px 22px 0; }
+
+        /* how-to strip */
+        .howto {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;
+            margin: 26px 0 6px; padding: 14px 18px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px;
+            color: var(--muted); font-size: 0.9rem;
+        }
+        .howto b { color: var(--text); font-weight: 600; }
+        .howto .step { display: inline-flex; align-items: center; gap: 7px; }
+        .howto .num {
+            display: grid; place-items: center; width: 19px; height: 19px; flex: none;
+            border-radius: 50%; font-family: var(--font-head); font-weight: 700; font-size: 0.7rem;
+            color: #1a0e00; background: linear-gradient(135deg, var(--accent), #ff5e00);
+        }
+        code.inl {
+            font-family: var(--font-mono); font-size: 0.84em;
+            background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+            border-radius: 5px; padding: 1px 6px; color: #ffcfa0;
+        }
+
+        /* category */
+        .cat {
+            font-family: var(--font-head); font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+            font-size: 1.1rem; color: #fff; margin: 34px 0 4px;
+            display: flex; align-items: center; gap: 11px;
+        }
+        .cat .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--cc); box-shadow: 0 0 12px var(--cc); flex: none; }
+        .cat + .cat-sub { color: var(--faint); font-size: 0.88rem; margin: 0 0 6px; }
+
+        .note {
+            border-left: 3px solid var(--danger); background: rgba(255,94,108,0.06);
+            border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 14px 0 18px;
+            color: var(--muted); font-size: 0.9rem;
+        }
+        .note b { color: var(--text); }
+        .note .lead { display: block; font-family: var(--font-head); font-weight: 600; letter-spacing: .5px; color: var(--text); margin-bottom: 4px; text-transform: uppercase; font-size: .72rem; }
+
+        /* example */
+        .ex {
+            background: linear-gradient(180deg, var(--bg-2), rgba(20,16,31,0.55));
+            border: 1px solid var(--border); border-left: 3px solid var(--ec);
+            border-radius: 12px; padding: 16px 18px; margin: 14px 0;
+            box-shadow: 0 20px 46px -34px #000;
+        }
+        .ex-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .ex-title { font-family: var(--font-head); font-weight: 600; font-size: 1.02rem; color: #fff; }
+        .ex-tag { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: .4px; padding: 2px 9px; border-radius: 20px; margin-left: auto; }
+        .ex-tag.safe { color: var(--safe); background: rgba(111,207,151,0.12); border: 1px solid rgba(111,207,151,0.32); }
+        .ex-tag.input { color: #ff8a94; background: rgba(255,94,108,0.12); border: 1px solid rgba(255,94,108,0.32); }
+        .ex-desc { color: var(--muted); font-size: 0.9rem; margin: 7px 0 0; }
+        .ex-tune { color: var(--faint); font-size: 0.83rem; margin: 5px 0 0; }
+        .ex-tune b { color: var(--accent-2); font-weight: 500; }
+
+        .codewrap { position: relative; margin-top: 11px; }
+        .codewrap .copy {
+            position: absolute; top: 8px; right: 8px; z-index: 2;
+            font-family: var(--font-head); font-size: 0.64rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--muted); background: rgba(13,10,23,0.85); border: 1px solid var(--border);
+            border-radius: 6px; padding: 4px 10px; cursor: pointer; transition: color .15s, border-color .15s, background .15s;
+        }
+        .codewrap .copy:hover { color: var(--text); border-color: var(--border-accent); background: var(--accent-soft); }
+        pre.lua {
+            background: var(--code-bg); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px; overflow-x: auto;
+            font-family: var(--font-mono); font-size: 0.84rem; line-height: 1.65; color: #cdc7e6; margin: 0;
+        }
+        pre.lua .c { color: #6f688f; font-style: italic; }
+        pre.lua .s { color: #c3e88d; }
+        pre.lua .k { color: #c792ea; }
+        pre.lua .g { color: #ffb26b; }
+        pre.lua .n { color: #f78c6c; }
+
+        footer { text-align: center; color: var(--faint); font-size: 0.82rem; padding: 40px 22px 50px; }
+        footer a { color: var(--accent-2); text-decoration: none; }
+        footer a:hover { color: var(--accent); }
+        ::selection { background: rgba(255,122,24,0.28); }
+    </style>
+</head>
+<body>
+    <header class="page-head">
+        <div class="brand"><span class="logo">⚡</span> POE Assistant</div>
+        <h1>Scripting Examples</h1>
+        <p>ready-to-use scripts — copy, paste, tweak the numbers at the top</p>
+        <a class="back" href="scripting-api.html">← full POEMEMORY API reference</a>
+    </header>
+
+    <div class="container">
+
+        <div class="howto">
+            <span class="step"><span class="num">1</span> <b>SCRIPTING</b> tab → <b>+ new</b></span>
+            <span class="step"><span class="num">2</span> paste &amp; <b>save</b></span>
+            <span class="step"><span class="num">3</span> toggle the script <b>on</b></span>
+            <span class="step"><span class="num">4</span> tweak the values at the top</span>
+        </div>
+        <p style="color:var(--faint);font-size:0.86rem;margin:8px 2px 0">
+            Scripts marked <span style="color:var(--safe)">no setup</span> just observe and alert. Scripts marked
+            <span style="color:#ff8a94">needs input</span> send keys/clicks — first turn on <b style="color:var(--text)">input enabled</b>
+            in the tab and bind a <b style="color:var(--text)">panic key</b> (HOTKEYS tab).
+        </p>
+
+        <!-- ================= ALERTS & MARKS ================= -->
+        <div class="cat" style="--cc: var(--safe)"><span class="dot"></span>Alerts &amp; marks</div>
+        <p class="cat-sub">no setup — safe to run anywhere; they never touch your character</p>
+
+        <div class="ex" style="--ec: var(--safe)">
+            <div class="ex-head"><span class="ex-title">Swarm alert</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Toast when a lot of monsters are close — packs, breach, delirium, ritual.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">RANGE</code> (grid units), <code class="inl">COUNT</code> (how many triggers it).</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local RANGE = 35
+local COUNT = 10
+
+function tick()
+  local n = POEMEMORY.World.Monsters:CountWithin(RANGE)
+  if n &gt;= COUNT then
+    notify("swarm: " .. n, "ff5555")
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--safe)">
+            <div class="ex-head"><span class="ex-title">Rare / unique nearby</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Toast + chime + box when a rare or unique comes into range. Throttled so it won't spam.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">RANGE</code>. Colors are hex strings.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local RANGE = 60
+local last = 0
+
+function tick()
+  if now() - last &lt; 1500 then return end
+  local m = POEMEMORY.World.Monsters:Nearest()
+  if m and (m.Rarity == "Rare" or m.Rarity == "Unique") and m.Distance &lt;= RANGE then
+    last = now()
+    local col = "ffcc00"
+    if m.Rarity == "Unique" then col = "ff8000" end
+    notify(m.Rarity .. " nearby", col)
+    sound(1)
+    m:Mark(col)
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--safe)">
+            <div class="ex-head"><span class="ex-title">Box every rare &amp; unique</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Draw a hollow box on each rare (yellow) and unique (orange) around you — pure visibility.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">RANGE</code>, the two colors.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local RANGE = 70
+
+function tick()
+  for _, m in ipairs(POEMEMORY.World.Monsters:Within(RANGE)) do
+    if m.Rarity == "Unique" then
+      m:Mark("ff8000")
+    elseif m.Rarity == "Rare" then
+      m:Mark("ffd000")
+    end
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--safe)">
+            <div class="ex-head"><span class="ex-title">Highlight a dangerous mod</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Box any monster carrying a specific mod (a damaging aura, on-death effect, etc.). Great for "don't stand in that."</p>
+            <p class="ex-tune"><b>Tune:</b> put a fragment of the mod id in <code class="inl">MOD</code> — find ids via the F11 dump or the MONSTER WATCHER catalog.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local MOD = "Volatile"     -- substring, case-insensitive
+local RANGE = 80
+
+function tick()
+  for _, m in ipairs(POEMEMORY.World.Monsters:Within(RANGE)) do
+    if m:HasMod(MOD) then
+      m:Mark("ff3030")
+    end
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--safe)">
+            <div class="ex-head"><span class="ex-title">Low-life alarm</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">A loud warning when life gets dangerous. This only <b>alerts</b> — it does not touch your character.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">THRESH</code> (percent).</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local THRESH = 35
+local last = 0
+
+function tick()
+  if POEMEMORY.Player.Life.Pct &lt;= THRESH and now() - last &gt;= 800 then
+    last = now()
+    notify("LOW LIFE", "ff0000")
+    sound(3)
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--safe)">
+            <div class="ex-head"><span class="ex-title">Idle detector</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Nudge you if you haven't moved in a while — handy if you tab out mid-map. Shows off <code class="inl">Player.X/Y</code> + timing.</p>
+            <p class="ex-tune"><b>Tune:</b> the <code class="inl">15000</code> ms idle window.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local lastX, lastY, stillSince = 0, 0, 0
+
+function tick()
+  local p = POEMEMORY.Player
+  if math.abs(p.X - lastX) &gt; 2 or math.abs(p.Y - lastY) &gt; 2 then
+    lastX, lastY, stillSince = p.X, p.Y, now()   -- moved: reset
+  elseif now() - stillSince &gt; 15000 then
+    notify("idle 15s", "aa88ff")
+    stillSince = now()
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--safe)">
+            <div class="ex-head"><span class="ex-title">Zone-change announcer</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Toast the zone whenever you enter a new area — fires once per transition via <code class="inl">Area.ChangeCount</code>.</p>
+            <p class="ex-tune"><b>Tune:</b> nothing needed.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local seen = -1
+
+function tick()
+  local c = POEMEMORY.Area.ChangeCount
+  if c ~= seen then
+    seen = c
+    local name = POEMEMORY.Area.Name
+    if name == "" then name = POEMEMORY.Area.Code end
+    notify("zone: " .. name)
+  end
+end</pre></div>
+        </div>
+
+        <!-- ================= AUTOMATION ================= -->
+        <div class="cat" style="--cc: var(--danger)"><span class="dot"></span>Automation</div>
+        <p class="cat-sub">these send input — read the box, then flip <b>input enabled</b> on</p>
+
+        <div class="note">
+            <span class="lead">⚠ Before running any of these</span>
+            Turn on <b>input enabled</b> in the SCRIPTING tab and bind a <b>panic key</b> in the HOTKEYS tab (your instant kill switch, works even alt-tabbed). Input only fires while the game is focused and is rate-limited to a handful of actions per second.
+        </div>
+
+        <div class="ex" style="--ec: var(--danger)">
+            <div class="ex-head"><span class="ex-title">Auto life-flask</span><span class="ex-tag input">needs input</span></div>
+            <p class="ex-desc">Press your life-flask key when life drops below a threshold, with a cooldown so it doesn't drain instantly.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code> (your slot key), <code class="inl">THRESH</code> (percent), the <code class="inl">1200</code> ms cooldown.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local FLASK  = "1"
+local THRESH = 65
+local last = 0
+
+function tick()
+  if POEMEMORY.Player.Life.Pct &lt;= THRESH and now() - last &gt;= 1200 then
+    last = now()
+    Input.Press(FLASK)
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--danger)">
+            <div class="ex-head"><span class="ex-title">Auto mana-flask</span><span class="ex-tag input">needs input</span></div>
+            <p class="ex-desc">Same idea for mana — fires when mana runs low so you don't stop attacking.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code>, <code class="inl">THRESH</code>.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local FLASK  = "2"
+local THRESH = 25
+local last = 0
+
+function tick()
+  if POEMEMORY.Player.Mana.Pct &lt;= THRESH and now() - last &gt;= 1500 then
+    last = now()
+    Input.Press(FLASK)
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: var(--danger)">
+            <div class="ex-head"><span class="ex-title">Melee auto-attack nearest</span><span class="ex-tag input">needs input</span></div>
+            <p class="ex-desc">Right-click the closest on-screen monster within melee range, once per second. The cursor jumps to the target to aim.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">MELEE</code> (grid range — measure it, see the note below), the <code class="inl">1000</code> ms rate, and the button (<code class="inl">"right"</code>).</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local MELEE = 20
+local last = 0
+
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  local m = POEMEMORY.World.Monsters:Nearest()
+  if m and m.OnScreen and m.Distance &lt;= MELEE then
+    Mouse.ClickAt(m.ScreenX, m.ScreenY, "right")
+  end
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Find your MELEE number:</b> temporarily add <code class="inl">notify("d "..math.floor(m.Distance))</code> and read it while standing at swing range.</p>
+        </div>
+
+    </div>
+
+    <footer>
+        POE Assistant · Scripting Examples · <a href="scripting-api.html">API reference</a> · <a href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">Discord</a>
+    </footer>
+
+    <script>
+    (function () {
+        // syntax highlight
+        var KW = /^(and|break|do|else|elseif|end|false|for|function|goto|if|in|local|nil|not|or|repeat|return|then|true|until|while)$/;
+        var GL = /^(POEMEMORY|Input|Mouse|notify|sound|log|now|ipairs|pairs|math|string|table|tostring|tonumber)$/;
+        function esc(s){ return s.replace(/[&<>]/g, function(c){ return c === "&" ? "&amp;" : c === "<" ? "&lt;" : "&gt;"; }); }
+        var re = /(--[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|([A-Za-z_]\w*)|(0x[0-9a-fA-F]+|\d+\.?\d*)/g;
+        document.querySelectorAll("pre.lua").forEach(function (pre) {
+            var src = pre.textContent, out = "", last = 0, m;
+            while ((m = re.exec(src))) {
+                out += esc(src.slice(last, m.index));
+                var t = m[0], cls = "";
+                if (m[1]) cls = "c";
+                else if (m[2]) cls = "s";
+                else if (m[3]) cls = KW.test(t) ? "k" : (GL.test(t) ? "g" : "");
+                else if (m[4]) cls = "n";
+                out += cls ? ('<span class="' + cls + '">' + esc(t) + "</span>") : esc(t);
+                last = m.index + t.length;
+            }
+            out += esc(src.slice(last));
+            pre.innerHTML = out;
+        });
+
+        // copy buttons (with a fallback for file:// where the async clipboard may be blocked)
+        function copyText(text, btn) {
+            function done(ok) { btn.textContent = ok ? "copied" : "select + copy"; setTimeout(function () { btn.textContent = "copy"; }, 1300); }
+            function fallback() {
+                try {
+                    var ta = document.createElement("textarea");
+                    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+                    document.body.appendChild(ta); ta.select();
+                    var ok = document.execCommand("copy"); document.body.removeChild(ta); done(ok);
+                } catch (e) { done(false); }
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+            } else { fallback(); }
+        }
+        document.querySelectorAll(".codewrap").forEach(function (w) {
+            var pre = w.querySelector("pre.lua"), btn = w.querySelector(".copy");
+            if (pre && btn) btn.addEventListener("click", function () { copyText(pre.textContent, btn); });
+        });
+    })();
+    </script>
+</body>
+</html>
