@@ -283,6 +283,87 @@ function tick()
 end</pre></div>
         </div>
 
+        <!-- ================= BUFFS & CHARGES ================= -->
+        <div class="cat" style="--cc: #5ed3f3"><span class="dot"></span>Buffs &amp; charges</div>
+        <p class="cat-sub">no setup — read what's on you: auras, flasks, charge stacks</p>
+
+        <div class="ex" style="--ec: #5ed3f3">
+            <div class="ex-head"><span class="ex-title">What am I actually buffed with?</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc"><b>Start here.</b> Prints every buff on you, with its stack count and time left, once a second. Run it, make the thing happen in game, read the log, then copy the id into any script below.</p>
+            <p class="ex-tune"><b>Tune:</b> nothing. Turn it off once you have the id you wanted.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local last = 0
+
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  for _, b in ipairs(POEMEMORY.Player:Buffs()) do
+    log(b.Id .. "  x" .. b.Charges .. "  " ..
+        (b.IsPermanent and "permanent" or string.format("%.1fs", b.TimeLeft)))
+  end
+  log("----")
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Ids look like:</b> <code class="inl">power_charge</code>, <code class="inl">frenzy_charge</code>, <code class="inl">endurance_charge</code>, <code class="inl">ghost_dance_stacks</code>, <code class="inl">mana_leech</code>. Matching ignores capitals.</p>
+        </div>
+
+        <div class="ex" style="--ec: #5ed3f3">
+            <div class="ex-head"><span class="ex-title">Charge counter</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Tells you when you hit full charges, and when you drop to none. Only speaks when the number actually changes, so it won't spam.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">CHARGE</code> (which one), <code class="inl">FULL</code> (your maximum).</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local CHARGE = "power_charge"
+local FULL   = 3
+local seen = -1
+
+function tick()
+  local n = POEMEMORY.Player:Charges(CHARGE)
+  if n == seen then return end        -- nothing changed
+  seen = n
+  if n &gt;= FULL then
+    notify(CHARGE .. " FULL (" .. n .. ")", "c792ea")
+  elseif n == 0 then
+    notify(CHARGE .. " empty", "888888")
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: #5ed3f3">
+            <div class="ex-head"><span class="ex-title">Buff about to run out</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Warns you a couple of seconds before a buff expires, so you can refresh it. Skips permanent buffs, which never expire.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">BUFF</code> (the id), <code class="inl">WARN</code> (seconds of notice).</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local BUFF = "ghost_dance_stacks"
+local WARN = 2.0
+local warned = false
+
+function tick()
+  local b = POEMEMORY.Player:Buff(BUFF)
+  if not b or b.IsPermanent then warned = false; return end
+  if b.TimeLeft &lt;= WARN then
+    if not warned then
+      warned = true
+      notify(BUFF .. " " .. string.format("%.1fs", b.TimeLeft), "ffb26b")
+    end
+  else
+    warned = false                    -- it got refreshed; arm again
+  end
+end</pre></div>
+        </div>
+
+        <div class="ex" style="--ec: #5ed3f3">
+            <div class="ex-head"><span class="ex-title">Lost my charges</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Shouts when charges drop sharply — you spent them, or you stopped generating. Good for builds that care about staying at maximum.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">CHARGE</code>, <code class="inl">DROP</code> (how big a fall is worth a shout).</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local CHARGE = "frenzy_charge"
+local DROP   = 2
+local prev = 0
+
+function tick()
+  local n = POEMEMORY.Player:Charges(CHARGE)
+  if prev - n &gt;= DROP then
+    notify("lost " .. (prev - n) .. " " .. CHARGE, "ff5e6c")
+  end
+  prev = n
+end</pre></div>
+        </div>
+
         <!-- ================= AUTOMATION ================= -->
         <div class="cat" style="--cc: var(--danger)"><span class="dot"></span>Automation</div>
         <p class="cat-sub">these send input — read the box, then flip <b>input enabled</b> on</p>
@@ -294,34 +375,43 @@ end</pre></div>
 
         <div class="ex" style="--ec: var(--danger)">
             <div class="ex-head"><span class="ex-title">Auto life-flask</span><span class="ex-tag input">needs input</span></div>
-            <p class="ex-desc">Press your life-flask key when life drops below a threshold, with a cooldown so it doesn't drain instantly.</p>
-            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code> (your slot key), <code class="inl">THRESH</code> (percent), the <code class="inl">1200</code> ms cooldown.</p>
+            <p class="ex-desc">Press your life-flask key when life drops below a threshold. It also checks whether the flask is <b>already working</b>, so it doesn't burn a second charge on top of the first.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code> (your slot key), <code class="inl">THRESH</code> (percent), <code class="inl">BUFF</code> (see below), the <code class="inl">1200</code> ms floor.</p>
             <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local FLASK  = "1"
 local THRESH = 65
+local BUFF   = ""     -- your life-flask buff id; leave "" to skip this check
 local last = 0
 
 function tick()
-  if POEMEMORY.Player.Life.Pct &lt;= THRESH and now() - last &gt;= 1200 then
-    last = now()
-    Input.Press(FLASK)
-  end
+  if POEMEMORY.Player.Life.Pct &gt; THRESH then return end
+
+  -- already drinking? don't waste a second charge
+  if BUFF ~= "" and POEMEMORY.Player:HasBuff(BUFF) then return end
+
+  if now() - last &lt; 1200 then return end
+  last = now()
+  Input.Press(FLASK)
 end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Why the <code class="inl">BUFF</code> line:</b> a timer alone is a guess. It re-presses whether or not the flask is actually up, which wastes charges when it fires early and leaves you dry when it fires late. Checking the buff asks the game instead of guessing. Find your id with <b>"What am I actually buffed with?"</b> above; leave <code class="inl">BUFF</code> empty and the script behaves exactly as it did before.</p>
         </div>
 
         <div class="ex" style="--ec: var(--danger)">
             <div class="ex-head"><span class="ex-title">Auto mana-flask</span><span class="ex-tag input">needs input</span></div>
-            <p class="ex-desc">Same idea for mana — fires when mana runs low so you don't stop attacking.</p>
-            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code>, <code class="inl">THRESH</code>.</p>
+            <p class="ex-desc">Same idea for mana — fires when mana runs low so you don't stop attacking, and skips the press while the flask is still running.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code>, <code class="inl">THRESH</code>, <code class="inl">BUFF</code>.</p>
             <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local FLASK  = "2"
 local THRESH = 25
+local BUFF   = "flask_effect_mana"   -- verify yours with the buff-list script
 local last = 0
 
 function tick()
-  if POEMEMORY.Player.Mana.Pct &lt;= THRESH and now() - last &gt;= 1500 then
-    last = now()
-    Input.Press(FLASK)
-  end
+  if POEMEMORY.Player.Mana.Pct &gt; THRESH then return end
+  if BUFF ~= "" and POEMEMORY.Player:HasBuff(BUFF) then return end
+  if now() - last &lt; 1500 then return end
+  last = now()
+  Input.Press(FLASK)
 end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Check the id first.</b> <code class="inl">flask_effect_mana</code> is what a mana flask reported on our test character — yours can differ by flask type and by game. Run the buff-list script, drink the flask, and read the log.</p>
         </div>
 
         <div class="ex" style="--ec: var(--danger)">

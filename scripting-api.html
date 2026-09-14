@@ -169,6 +169,7 @@
             <a href="#intro">Overview</a>
             <a href="#lua">Lua &amp; the object</a>
             <a href="#player">Player</a>
+            <a href="#buffs">Buffs &amp; charges</a>
             <a href="#area">Area</a>
             <a href="#monsters">World.Monsters</a>
             <a href="#handle">Monster handle</a>
@@ -250,6 +251,7 @@ end</pre>
                 <div class="member"><div class="sig"><span class="name">.X</span> <span class="ret">number</span> &nbsp; <span class="name">.Y</span> <span class="ret">number</span></div><div class="desc">Your position in <b>grid units</b> (useful for movement / idle detection between ticks).</div></div>
                 <div class="member"><div class="sig"><span class="name">.IsAlive</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> while you have positive life.</div></div>
                 <div class="member"><div class="sig"><span class="name">.Life</span> &nbsp; <span class="name">.Mana</span> &nbsp; <span class="name">.Es</span> <span class="ret">pool</span></div><div class="desc">Three vital pools, each with the fields below. <code class="inl">.Es</code> is energy shield.</div></div>
+                <div class="member"><div class="sig"><span class="name">:HasBuff</span><span class="args">(id)</span> &nbsp; <span class="name">:Charges</span><span class="args">(id)</span> &nbsp; <span class="name">:Buffs</span><span class="args">()</span></div><div class="desc">What is currently on you, and how many stacks. Full list in <a href="#buffs" style="color:var(--accent-2)">Buffs &amp; charges</a>.</div></div>
             </div>
 
             <h3>Each pool (<code class="inl">.Life</code> / <code class="inl">.Mana</code> / <code class="inl">.Es</code>)</h3>
@@ -261,6 +263,61 @@ end</pre>
             </div>
 <pre class="lua">if POEMEMORY.Player.Life.Pct &lt; 50 then notify("low life!", "ff4040") end
 if POEMEMORY.Player.Es.Present and POEMEMORY.Player.Es.Pct &lt; 25 then notify("ES down") end</pre>
+        </section>
+
+        <!-- BUFFS -->
+        <section class="card" id="buffs" style="--c: #5ed3f3">
+            <h2><span class="dot"></span>Buffs &amp; charges</h2>
+            <p class="sub">what's currently on you — auras, flasks, ailments, and charge stacks</p>
+            <div class="note"><span class="lead">Ids are the game's own strings</span>Lower-case with underscores, exactly as the game names them: <code class="inl">power_charge</code>, <code class="inl">frenzy_charge</code>, <code class="inl">endurance_charge</code>, <code class="inl">ghost_dance_stacks</code>, <code class="inl">mana_leech</code>… Matching is <b>case-insensitive</b>, so don't lose time to capitalisation. Not sure what a buff is called? Print them — see the bottom of this card.</div>
+
+            <h3>Quick checks <span style="color:var(--faint);font-weight:400">— on <code class="inl">POEMEMORY.Player</code></span></h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">:HasBuff</span><span class="args">(id)</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> while that buff is on you.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Charges</span><span class="args">(id)</span> <span class="ret">number</span></div><div class="desc">How many stacks / charges — e.g. how many power charges you're holding. <b>0</b> when the buff isn't there, so you can compare it without checking first.</div></div>
+                <div class="member"><div class="sig"><span class="name">:BuffTimeLeft</span><span class="args">(id)</span> <span class="ret">number</span></div><div class="desc">Seconds left. <b>0</b> when absent. A permanent buff (an aura, a reservation) returns <code class="inl">math.huge</code> — infinity.</div></div>
+                <div class="member"><div class="sig"><span class="name">:BuffPercent</span><span class="args">(id)</span> <span class="ret">number</span></div><div class="desc">Time left as a percent of that application's full length (0–100). <b>100</b> for permanent buffs. Handy when you don't know the duration.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Buff</span><span class="args">(id)</span> <span class="ret">buff | nil</span></div><div class="desc">The whole thing as a handle (fields below), or <code class="inl">nil</code> when it isn't on you.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Buffs</span><span class="args">()</span> <span class="ret">list of buffs</span></div><div class="desc">Everything on you right now — loop it with <code class="inl">ipairs</code>.</div></div>
+            </div>
+
+            <h3>The buff handle</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">.Id</span> <span class="ret">string</span></div><div class="desc">The game's id, e.g. <code class="inl">power_charge</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Charges</span> <span class="ret">number</span></div><div class="desc">Stack count. <b>1</b> for a plain buff that doesn't stack.</div></div>
+                <div class="member"><div class="sig"><span class="name">.TimeLeft</span> <span class="ret">number</span></div><div class="desc">Seconds remaining; <code class="inl">math.huge</code> when permanent.</div></div>
+                <div class="member"><div class="sig"><span class="name">.TotalTime</span> <span class="ret">number</span></div><div class="desc">How long this application lasts in full.</div></div>
+                <div class="member"><div class="sig"><span class="name">.PercentTimeLeft</span> <span class="ret">number</span></div><div class="desc">0–100.</div></div>
+                <div class="member"><div class="sig"><span class="name">.IsPermanent</span> <span class="ret">bool</span></div><div class="desc">No timer at all. Check this instead of comparing against infinity.</div></div>
+                <div class="member"><div class="sig"><span class="name">.SourceEntityId</span> <span class="ret">number</span> &nbsp; <span class="name">.FlaskSlot</span> <span class="ret">number</span> &nbsp; <span class="name">.Effectiveness</span> <span class="ret">number</span></div><div class="desc">Who applied it, which flask slot it came from, and its effect strength as a real percentage. <b>PoE2 only</b> — on PoE1 these read 0.</div></div>
+            </div>
+
+            <div class="note" style="--c:#ff8a94"><span class="lead">⚠ Lots of time left does NOT mean safe</span>A buff can leave for three different reasons, and only one of them is the clock:<br>
+                <b>it ran out</b> — <code class="inl">TimeLeft</code> reached 0;<br>
+                <b>it was spent</b> — a charge consumed by a skill. Power charges last 21 seconds, but they vanish the instant you use them, with 19 seconds still showing;<br>
+                <b>it was switched off</b> — a permanent aura or reservation you toggled.<br>
+                So gate on <code class="inl">:Charges(...)</code> or <code class="inl">:HasBuff(...)</code> <b>every tick</b>. Never assume a big <code class="inl">TimeLeft</code> means it's still there next tick.</div>
+
+            <div class="note"><span class="lead">Some buffs appear more than once</span>That's normal and it isn't a stack count. Leech, recoup and reservation effects genuinely repeat — one entry per application. A <b>charge</b> buff is the opposite: always <b>one</b> entry carrying a count. So read <code class="inl">:Charges(id)</code>; don't count how many times the id appears.</div>
+
+            <h3>Finding the id you want</h3>
+            <p style="color:var(--faint);font-size:0.9rem;margin:0 2px 8px">Run this once with the buff active, read the log, then copy the id into your real script.</p>
+<pre class="lua">-- print everything on me, once per second
+local last = 0
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  for _, b in ipairs(POEMEMORY.Player:Buffs()) do
+    log(b.Id .. "  x" .. b.Charges .. "  " .. (b.IsPermanent and "permanent" or string.format("%.1fs", b.TimeLeft)))
+  end
+  log("----")
+end</pre>
+<pre class="lua">-- the everyday uses
+if POEMEMORY.Player:Charges("power_charge") &gt;= 3 then notify("3 power charges!", "c792ea") end
+if not POEMEMORY.Player:HasBuff("ghost_dance_stacks") then notify("ghost dance down") end
+
+local t = POEMEMORY.Player:BuffTimeLeft("flask_effect_mana")
+if t &gt; 0 and t &lt; 1.5 then notify("mana flask expiring") end</pre>
         </section>
 
         <!-- AREA -->
@@ -419,6 +476,8 @@ end</pre>
                 <div class="member"><div class="sig"><span class="name">Loaded bubble only</span></div><div class="desc"><code class="inl">World.Monsters</code> sees what's loaded near you, not the far side of the map.</div></div>
                 <div class="member"><div class="sig"><span class="name">Keep <code class="inl" style="color:#ffcfa0">tick()</code> light</span></div><div class="desc">It runs constantly. A script that loops forever is caught by a watchdog and disabled after repeated errors — check the log.</div></div>
                 <div class="member"><div class="sig"><span class="name">Prefer <code class="inl" style="color:#ffcfa0">.Code</code> over <code class="inl" style="color:#ffcfa0">.Name</code></span></div><div class="desc">Zone/monster display names can differ from what you match on; the code/metadata are the reliable strings.</div></div>
+                <div class="member"><div class="sig"><span class="name">A charge can vanish with time still on it</span></div><div class="desc">Charges are <b>spent</b>, not just expired. Re-check <code class="inl">:Charges(id)</code> every tick — a 21-second power charge can be gone one tick after you read 19 seconds left.</div></div>
+                <div class="member"><div class="sig"><span class="name">Permanent buffs report infinity</span></div><div class="desc"><code class="inl">:BuffTimeLeft</code> returns <code class="inl">math.huge</code> for auras and reservations. Use <code class="inl">.IsPermanent</code> rather than comparing numbers, or your "expiring soon" test will never fire.</div></div>
             </div>
         </section>
 
