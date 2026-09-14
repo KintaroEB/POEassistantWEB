@@ -364,6 +364,51 @@ function tick()
 end</pre></div>
         </div>
 
+        <div class="ex" style="--ec: #5ed3f3">
+            <div class="ex-head"><span class="ex-title">Rage watcher (works on both games)</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Rage is kept in two completely different places: on <b>PoE2</b> it is a pool like mana, on <b>PoE1</b> it is a buff with a stack count. You read it the same way either time. Note the script uses <code class="inl">.Current</code>, not <code class="inl">.Pct</code> — PoE1 exposes no maximum, so percent is 0 there.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">LOW</code> (shout below this), <code class="inl">GOOD</code> (shout once you reach this).</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local LOW  = 5
+local GOOD = 20
+local said = ""
+
+function tick()
+  local r = POEMEMORY.Player.Rage
+  if not r.Present then return end          -- this build has no rage at all
+
+  local n = r.Current
+  local state = (n &lt;= LOW and "low") or (n &gt;= GOOD and "good") or "mid"
+  if state == said then return end          -- only speak when it changes
+  said = state
+
+  if state == "low"  then notify("rage low ("  .. n .. ")", "ff8a5c") end
+  if state == "good" then notify("rage ready (" .. n .. ")", "6bd98b") end
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>On PoE2</b> you can also use <code class="inl">r.Max</code> and <code class="inl">r.Pct</code> — a real pool, so both work. <b>On PoE1</b> they read 0 by design, because the game has no rage maximum to report.</p>
+        </div>
+
+        <div class="ex" style="--ec: #5ed3f3">
+            <div class="ex-head"><span class="ex-title">Stacks vs entries — reading the right number</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Buffs stack in <b>two different ways</b>, and picking the wrong reader gives you a quietly wrong number. A <b>charge</b> is one entry counting up, so ask <code class="inl">:Charges</code>. Leech, recoup and reservation effects instead repeat — one entry per application, each counting 1 — so ask <code class="inl">:BuffCount</code>. This prints both side by side so you can see which kind a buff is.</p>
+            <p class="ex-tune"><b>Tune:</b> the <code class="inl">WATCH</code> list — put your own ids in it.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local WATCH = { "power_charge", "frenzy_charge", "endurance_charge", "life_leech" }
+local last = 0
+
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+
+  for _, id in ipairs(WATCH) do
+    local entries = POEMEMORY.Player:BuffCount(id)
+    if entries &gt; 0 then
+      log(id .. "  entries=" .. entries .. "  charges=" .. POEMEMORY.Player:Charges(id))
+    end
+  end
+  log("----")
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>What you should see:</b> a charge reads <code class="inl">entries=1</code> with a rising <code class="inl">charges</code> number. <code class="inl">life_leech</code> does the opposite — many entries, each <code class="inl">charges=1</code>. On a real PoE1 character it showed up as <b>15 entries at once</b>.</p>
+        </div>
+
         <!-- ================= AUTOMATION ================= -->
         <div class="cat" style="--cc: var(--danger)"><span class="dot"></span>Automation</div>
         <p class="cat-sub">these send input — read the box, then flip <b>input enabled</b> on</p>
