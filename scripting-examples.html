@@ -409,6 +409,71 @@ end</pre></div>
             <p class="ex-tune" style="margin-top:9px"><b>What you should see:</b> a charge reads <code class="inl">entries=1</code> with a rising <code class="inl">charges</code> number. <code class="inl">life_leech</code> does the opposite — many entries, each <code class="inl">charges=1</code>. On a real PoE1 character it showed up as <b>15 entries at once</b>.</p>
         </div>
 
+        <!-- ================= FLASKS ================= -->
+        <div class="cat" style="--cc: #7ee787"><span class="dot"></span>Flasks &amp; charms</div>
+        <p class="cat-sub">no setup — read your belt slot by slot. Slot 1 is the leftmost cell, the key you press.</p>
+
+        <div class="note">
+            <span class="lead">On PoE2 the belt also holds charms</span>
+            PoE2 keeps flasks and charms in the <b>same</b> belt, so slot 3 may well be a charm. Check <code class="inl">.Name</code> when it matters. PoE1 has no charms — there it is flasks only.
+        </div>
+
+        <div class="ex" style="--ec: #7ee787">
+            <div class="ex-head"><span class="ex-title">What is in my belt?</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Print every belt slot with its name and charges. Run it once, read the log, then write your real script against the slot numbers you saw.</p>
+            <p class="ex-tune"><b>Faster way:</b> the SCRIPTING tab's <b>show character current values</b> button lists the same thing in a popup, no script needed.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local last = 0
+
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  for _, f in ipairs(POEMEMORY.Player:Flasks()) do
+    log("[" .. f.Slot .. "] " .. f.Name .. "  " .. f.Charges .. "/" .. f.BaseMax .. "  (" .. f.BaseId .. ")")
+  end
+  log("----")
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>What you should see:</b> one line per filled slot, in order. The number after the slash is the <b>base type's</b> maximum — your own charges can sit above it if your flask has "+X to maximum charges".</p>
+        </div>
+
+        <div class="ex" style="--ec: #7ee787">
+            <div class="ex-head"><span class="ex-title">Flask running low</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Warn when a slot drops under a charge count you choose. Useful for the flask you rely on most.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">SLOT</code> (1 = leftmost), <code class="inl">LOW</code> (charges), the <code class="inl">3000</code> ms throttle.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local SLOT = 1
+local LOW  = 12
+local last = 0
+
+function tick()
+  local c = POEMEMORY.Player:FlaskCharges(SLOT)
+  if c &gt;= LOW then return end
+  if now() - last &lt; 3000 then return end
+  last = now()
+  notify("flask " .. SLOT .. " low: " .. c, "ff5555")
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Why a raw number and not a percent:</b> <code class="inl">.Pct</code> is measured against the <b>base</b> maximum, which your mods change. A charge count you read off your own flask is exact.</p>
+        </div>
+
+        <div class="ex" style="--ec: #7ee787">
+            <div class="ex-head"><span class="ex-title">Find a flask by name</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Don't hard-code a slot. Search the belt for the flask you mean, so the script still works after you rearrange it.</p>
+            <p class="ex-tune"><b>Tune:</b> the word inside <code class="inl">find</code>, and <code class="inl">LOW</code>.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local WANT = "Quicksilver"
+local LOW  = 10
+local last = 0
+
+function tick()
+  if now() - last &lt; 3000 then return end
+  for _, f in ipairs(POEMEMORY.Player:Flasks()) do
+    if f.Name:find(WANT) and f.Charges &lt; LOW then
+      last = now()
+      notify(f.Name .. " low (slot " .. f.Slot .. ")", "ffcc00")
+      return
+    end
+  end
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Playing in another language?</b> Match on <code class="inl">f.BaseId</code> instead — that string never changes with your game language.</p>
+        </div>
+
         <!-- ================= AUTOMATION ================= -->
         <div class="cat" style="--cc: var(--danger)"><span class="dot"></span>Automation</div>
         <p class="cat-sub">these send input — read the box, then flip <b>input enabled</b> on</p>
@@ -421,14 +486,19 @@ end</pre></div>
         <div class="ex" style="--ec: var(--danger)">
             <div class="ex-head"><span class="ex-title">Auto life-flask</span><span class="ex-tag input">needs input</span></div>
             <p class="ex-desc">Press your life-flask key when life drops below a threshold. It also checks whether the flask is <b>already working</b>, so it doesn't burn a second charge on top of the first.</p>
-            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code> (your slot key), <code class="inl">THRESH</code> (percent), <code class="inl">BUFF</code> (see below), the <code class="inl">1200</code> ms floor.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code> (your slot key), <code class="inl">SLOT</code> (the same slot as a number), <code class="inl">THRESH</code> (percent), <code class="inl">BUFF</code> (see below), the <code class="inl">1200</code> ms floor.</p>
             <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local FLASK  = "1"
+local SLOT   = 1      -- the same flask, as a belt slot number (1 = leftmost)
 local THRESH = 65
+local COST   = 10     -- charges one sip costs on YOUR flask; 0 to skip this check
 local BUFF   = ""     -- your life-flask buff id; leave "" to skip this check
 local last = 0
 
 function tick()
   if POEMEMORY.Player.Life.Pct &gt; THRESH then return end
+
+  -- no charges? pressing does nothing but hide the problem
+  if COST &gt; 0 and POEMEMORY.Player:FlaskCharges(SLOT) &lt; COST then return end
 
   -- already drinking? don't waste a second charge
   if BUFF ~= "" and POEMEMORY.Player:HasBuff(BUFF) then return end
@@ -438,6 +508,7 @@ function tick()
   Input.Press(FLASK)
 end</pre></div>
             <p class="ex-tune" style="margin-top:9px"><b>Why the <code class="inl">BUFF</code> line:</b> a timer alone is a guess. It re-presses whether or not the flask is actually up, which wastes charges when it fires early and leaves you dry when it fires late. Checking the buff asks the game instead of guessing. Find your id with <b>"What am I actually buffed with?"</b> above; leave <code class="inl">BUFF</code> empty and the script behaves exactly as it did before.</p>
+            <p class="ex-tune" style="margin-top:9px"><b>Why the <code class="inl">COST</code> line:</b> an empty flask presses just as happily as a full one, and you only notice when you die. Reading the real charge count stops that. Set <code class="inl">COST</code> to what one sip costs on <i>your</i> flask — watch the number drop with the belt-printing script above, since flask mods change the cost.</p>
         </div>
 
         <div class="ex" style="--ec: var(--danger)">
@@ -445,12 +516,15 @@ end</pre></div>
             <p class="ex-desc">Same idea for mana — fires when mana runs low so you don't stop attacking, and skips the press while the flask is still running.</p>
             <p class="ex-tune"><b>Tune:</b> <code class="inl">FLASK</code>, <code class="inl">THRESH</code>, <code class="inl">BUFF</code>.</p>
             <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local FLASK  = "2"
+local SLOT   = 2
 local THRESH = 25
+local COST   = 10                    -- charges one sip costs on YOUR flask; 0 to skip
 local BUFF   = "flask_effect_mana"   -- verify yours with the buff-list script
 local last = 0
 
 function tick()
   if POEMEMORY.Player.Mana.Pct &gt; THRESH then return end
+  if COST &gt; 0 and POEMEMORY.Player:FlaskCharges(SLOT) &lt; COST then return end
   if BUFF ~= "" and POEMEMORY.Player:HasBuff(BUFF) then return end
   if now() - last &lt; 1500 then return end
   last = now()

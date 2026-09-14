@@ -170,6 +170,7 @@
             <a href="#lua">Lua &amp; the object</a>
             <a href="#player">Player</a>
             <a href="#buffs">Buffs &amp; charges</a>
+            <a href="#flasks">Flasks &amp; charms</a>
             <a href="#area">Area</a>
             <a href="#monsters">World.Monsters</a>
             <a href="#handle">Monster handle</a>
@@ -252,6 +253,7 @@ end</pre>
                 <div class="member"><div class="sig"><span class="name">.IsAlive</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> while you have positive life.</div></div>
                 <div class="member"><div class="sig"><span class="name">.Life</span> &nbsp; <span class="name">.Mana</span> &nbsp; <span class="name">.Es</span> &nbsp; <span class="name">.Rage</span> <span class="ret">pool</span></div><div class="desc">Vital pools, each with the fields below. <code class="inl">.Es</code> is energy shield. <code class="inl">.Rage</code> works on <b>both games</b> even though they store it differently — see the note under the pool fields.</div></div>
                 <div class="member"><div class="sig"><span class="name">:HasBuff</span><span class="args">(id)</span> &nbsp; <span class="name">:Charges</span><span class="args">(id)</span> &nbsp; <span class="name">:BuffCount</span><span class="args">(id)</span> &nbsp; <span class="name">:Buffs</span><span class="args">()</span></div><div class="desc">What is currently on you, and how many stacks. Full list in <a href="#buffs" style="color:var(--accent-2)">Buffs &amp; charges</a>.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Flask</span><span class="args">(slot)</span> &nbsp; <span class="name">:FlaskCharges</span><span class="args">(slot)</span> &nbsp; <span class="name">.FlaskCount</span> &nbsp; <span class="name">:Flasks</span><span class="args">()</span></div><div class="desc">Your belt, slot by slot. Full list in <a href="#flasks" style="color:var(--accent-2)">Flasks &amp; charms</a>.</div></div>
             </div>
 
             <h3>Each pool (<code class="inl">.Life</code> / <code class="inl">.Mana</code> / <code class="inl">.Es</code> / <code class="inl">.Rage</code>)</h3>
@@ -321,6 +323,66 @@ if not POEMEMORY.Player:HasBuff("ghost_dance_stacks") then notify("ghost dance d
 
 local t = POEMEMORY.Player:BuffTimeLeft("flask_effect_mana")
 if t &gt; 0 and t &lt; 1.5 then notify("mana flask expiring") end</pre>
+        </section>
+
+        <!-- FLASKS -->
+        <section class="card" id="flasks" style="--c: #7ee787">
+            <h2><span class="dot"></span>Flasks &amp; charms</h2>
+            <p class="sub">what is in each belt slot, and how many charges it holds</p>
+
+            <div class="note"><span class="lead">Slot 1 is the leftmost belt cell</span>The same number you press in game. Slots are counted from <b>1</b>, not 0. An empty slot returns <code class="inl">nil</code> from <code class="inl">:Flask()</code> and <b>0</b> from <code class="inl">:FlaskCharges()</code>, so you can test either way.</div>
+
+            <div class="note" style="--c:#c792ea"><span class="lead">On PoE2 the belt also holds charms</span>PoE2 keeps flasks and charms in the <b>same</b> container, so a five-item belt is often 2 flasks + 3 charms and <code class="inl">:Flask(3)</code> may well be a charm. Read <code class="inl">.Name</code> or <code class="inl">.BaseId</code> if the difference matters to your script. PoE1 has no charms, so there it is flasks only.</div>
+
+            <h3>On <code class="inl">POEMEMORY.Player</code></h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">:Flask</span><span class="args">(slot)</span> <span class="ret">flask | nil</span></div><div class="desc">The item in that belt slot as a handle (fields below), or <code class="inl">nil</code> when the slot is empty.</div></div>
+                <div class="member"><div class="sig"><span class="name">:FlaskCharges</span><span class="args">(slot)</span> <span class="ret">number</span></div><div class="desc">Charges in that slot right now. <b>0</b> when empty, so you can compare it without checking first. This is the live number — the one the game itself shows you.</div></div>
+                <div class="member"><div class="sig"><span class="name">.FlaskCount</span> <span class="ret">number</span></div><div class="desc">How many belt slots currently hold an item.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Flasks</span><span class="args">()</span> <span class="ret">list of flasks</span></div><div class="desc">The whole belt in slot order — loop it with <code class="inl">ipairs</code>.</div></div>
+            </div>
+
+            <h3>The flask handle</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">.Slot</span> <span class="ret">number</span></div><div class="desc">Belt slot, <b>1</b> = leftmost.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Name</span> <span class="ret">string</span></div><div class="desc">The readable base name, e.g. <code class="inl">Hallowed Life Flask</code> or <code class="inl">Silver Charm</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">.BaseId</span> <span class="ret">string</span></div><div class="desc">The internal base id, e.g. <code class="inl">FlaskUtilitySilver</code> (PoE1) or <code class="inl">FourCharm7</code> (PoE2). It does not change with your game language, so match on this if your script has to work anywhere.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Charges</span> <span class="ret">number</span></div><div class="desc">Charges right now. <b>The only live, mod-aware number on this handle</b> — see the warning below.</div></div>
+                <div class="member"><div class="sig"><span class="name">.BaseMax</span> <span class="ret">number</span></div><div class="desc">Maximum charges of the <b>base type</b>. Your own flask can hold more.</div></div>
+                <div class="member"><div class="sig"><span class="name">.BaseUseCost</span> <span class="ret">number</span></div><div class="desc">What one use costs on the <b>base type</b>. Your own flask can cost less.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Uses</span> <span class="ret">number</span></div><div class="desc">Uses left at the base cost. A <b>floor</b>, never a ceiling.</div></div>
+                <div class="member"><div class="sig"><span class="name">.CanUse</span> <span class="ret">bool</span></div><div class="desc">Enough charges at the base cost. Errs on the safe side — see below.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Pct</span> <span class="ret">number</span></div><div class="desc">Charges as a percent of <code class="inl">.BaseMax</code>. Can read <b>above 100</b> — that is correct, not a bug.</div></div>
+            </div>
+
+            <div class="note" style="--c:#ff8a94"><span class="lead">⚠ Only <code class="inl">.Charges</code> knows about your mods</span><code class="inl">.BaseMax</code> and <code class="inl">.BaseUseCost</code> come from the game's shared <b>base-type</b> data, which every flask of that type reads from. Your flask's own modifiers are <b>not</b> in there.<br>
+                So a flask with <i>"+X to maximum charges"</i> really holds more than <code class="inl">.BaseMax</code> says — measured up to <b>3x</b> the base value — and a flask with <i>"-X% charges used"</i> really costs less than <code class="inl">.BaseUseCost</code> says.<br>
+                Two consequences: <code class="inl">.Pct</code> can go over 100, and <code class="inl">.Uses</code>/<code class="inl">.CanUse</code> can say "not yet" when the flask is in fact ready. They are wrong in the <b>safe</b> direction only. For an exact test, compare <code class="inl">.Charges</code> against a number you measured on your own flask.</div>
+
+            <div class="note"><span class="lead">Don't hold on to a flask handle</span>Read it fresh each tick. Using a flask destroys and rebuilds it inside the game, so a handle you stored last tick can quietly start describing a <b>different</b> flask. The overlay re-reads the whole belt every tick for exactly this reason — just don't cache the result yourself.</div>
+
+            <h3>Seeing your belt</h3>
+            <p style="color:var(--faint);font-size:0.9rem;margin:0 2px 8px">Easiest way: open the dashboard's <b>SCRIPTING</b> tab and press <b>show character current values</b> — the popup lists your belt slot by slot, with names and charges. Or print it:</p>
+<pre class="lua">-- print the whole belt, once per second
+local last = 0
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  for _, f in ipairs(POEMEMORY.Player:Flasks()) do
+    log("[" .. f.Slot .. "] " .. f.Name .. "  " .. f.Charges .. "/" .. f.BaseMax)
+  end
+  log("----")
+end</pre>
+<pre class="lua">-- the everyday uses
+if POEMEMORY.Player:FlaskCharges(1) &lt; 10 then notify("life flask nearly empty", "ff5555") end
+
+local f = POEMEMORY.Player:Flask(2)
+if f and f.CanUse then notify(f.Name .. " ready", "7ee787") end
+
+-- find a flask by name instead of by slot
+for _, x in ipairs(POEMEMORY.Player:Flasks()) do
+  if x.Name:find("Quicksilver") and x.Charges == 0 then notify("quicksilver empty") end
+end</pre>
         </section>
 
         <!-- AREA -->
@@ -482,6 +544,7 @@ end</pre>
                 <div class="member"><div class="sig"><span class="name">A charge can vanish with time still on it</span></div><div class="desc">Charges are <b>spent</b>, not just expired. Re-check <code class="inl">:Charges(id)</code> every tick — a 21-second power charge can be gone one tick after you read 19 seconds left.</div></div>
                 <div class="member"><div class="sig"><span class="name">Permanent buffs report infinity</span></div><div class="desc"><code class="inl">:BuffTimeLeft</code> returns <code class="inl">math.huge</code> for auras and reservations. Use <code class="inl">.IsPermanent</code> rather than comparing numbers, or your "expiring soon" test will never fire.</div></div>
                 <div class="member"><div class="sig"><span class="name">An endless total does not mean an endless buff</span></div><div class="desc">Frenzy and endurance charges report <code class="inl">.TotalTime</code> as infinity while still counting down for real. Judge permanence from <code class="inl">.TimeLeft</code> or <code class="inl">.IsPermanent</code> — never from the total, or expiring charges will look permanent and sit at 100%.</div></div>
+                <div class="member"><div class="sig"><span class="name">A flask's max and cost are <i>base</i> values</span></div><div class="desc">Only <code class="inl">.Charges</code> knows about your flask's own mods. <code class="inl">.BaseMax</code> and <code class="inl">.BaseUseCost</code> come from shared base-type data, so <code class="inl">.Pct</code> can exceed 100 and <code class="inl">.CanUse</code> can say "no" on a flask that is actually ready. Both err on the safe side, never the risky one.</div></div>
             </div>
         </section>
 
