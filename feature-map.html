@@ -10,12 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
         :root {
-            --bg-0: #0b0913; --bg-1: #14101f; --bg-2: #1a1530; --bg-3: #221b3d; --bg-4: #2b2350;
+            /* darker floor across the board - this page is screenshotted, so contrast
+               lives in the accents rather than in the background */
+            --bg-0: #040308; --bg-1: #08060f; --bg-2: #0e0b18; --bg-3: #141026; --bg-4: #1b1533;
             --accent: #ff7a18; --accent-2: #ff9d4d;
-            --accent-soft: rgba(255,122,24,0.14); --accent-glow: rgba(255,122,24,0.45);
-            --text: #ece9f5; --muted: #9a93bd; --faint: #6f688f;
-            --border: rgba(255,255,255,0.08); --border-accent: rgba(255,122,24,0.40);
-            --line: rgba(255,255,255,0.16);
+            --accent-soft: rgba(255,122,24,0.10); --accent-glow: rgba(255,122,24,0.38);
+            --text: #e9e6f3; --muted: #8d86ae; --faint: #5b5580;
+            --border: rgba(255,255,255,0.055); --border-accent: rgba(255,122,24,0.34);
+            --line: rgba(255,255,255,0.10);
 
             /* pillar accents */
             --autopot: #ff7a18;
@@ -32,11 +34,11 @@
             min-height: 100vh;
             font-family: var(--font-body);
             color: var(--text);
-            background-color: var(--bg-1);
+            background-color: var(--bg-0);
             background-image:
-                radial-gradient(900px 600px at 12% -8%, rgba(255,122,24,0.10), transparent 60%),
-                radial-gradient(1100px 700px at 100% 0%, rgba(106,64,200,0.22), transparent 55%),
-                radial-gradient(900px 800px at 50% 120%, rgba(58,44,107,0.30), transparent 60%),
+                radial-gradient(820px 520px at 12% -10%, rgba(255,122,24,0.055), transparent 62%),
+                radial-gradient(1000px 640px at 100% -4%, rgba(90,52,178,0.13), transparent 58%),
+                radial-gradient(900px 760px at 50% 122%, rgba(40,30,78,0.20), transparent 62%),
                 linear-gradient(180deg, var(--bg-1), var(--bg-0));
             background-attachment: fixed;
             -webkit-font-smoothing: antialiased;
@@ -59,7 +61,7 @@
             font-family: var(--font-head); font-weight: 700;
             font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: 2px;
             text-transform: uppercase; margin: 14px 0 6px;
-            background: linear-gradient(180deg, #fff, #cfc7e8);
+            background: linear-gradient(180deg, #fff, #b9b0d8);
             -webkit-background-clip: text; background-clip: text; color: transparent;
         }
         .page-head p { color: var(--muted); margin: 0; font-size: 1rem; }
@@ -79,7 +81,7 @@
             list-style: none;
             text-align: center;
             position: relative;
-            padding: 26px 13px 0;
+            padding: 26px 9px 0;
         }
         /* connectors (Meacham) */
         .tree li::before, .tree li::after {
@@ -110,9 +112,9 @@
             padding: 16px 32px; border-radius: 14px;
             font-family: var(--font-head); font-weight: 700;
             letter-spacing: 3px; text-transform: uppercase; font-size: 1.3rem; color: #fff;
-            background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+            background: linear-gradient(180deg, var(--bg-3), var(--bg-1));
             border: 1px solid var(--border-accent);
-            box-shadow: 0 0 0 1px var(--border-accent), 0 12px 44px -14px var(--accent-glow);
+            box-shadow: 0 0 0 1px rgba(255,122,24,0.16), 0 14px 46px -16px var(--accent-glow);
         }
         .node-root .logo {
             display: grid; place-items: center; width: 34px; height: 34px;
@@ -125,35 +127,63 @@
         .pillar {
             display: inline-block;
             vertical-align: top;
-            width: 256px;
+            width: 238px;
             text-align: left;
-            background: linear-gradient(180deg, var(--bg-2), rgba(20,16,31,0.6));
+            background: linear-gradient(180deg, var(--bg-2), var(--bg-1) 58%);
             border: 1px solid var(--border);
-            border-top: 3px solid var(--c);
             border-radius: 13px;
             overflow: hidden;
-            box-shadow: 0 20px 46px -32px #000;
+            box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 9%, transparent),
+                        0 24px 54px -34px #000,
+                        inset 0 1px 0 rgba(255,255,255,0.025);
+        }
+        /* the accent now reads as a glowing top edge that fades out, instead of a hard rule */
+        .pillar-bar {
+            height: 3px;
+            background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 18%, transparent));
+            box-shadow: 0 0 14px -1px var(--c);
         }
         .pillar-head {
             display: flex; align-items: center; gap: 11px;
-            padding: 14px 16px;
-            background: color-mix(in srgb, var(--c) 14%, var(--bg-2));
+            padding: 13px 15px;
+            background: color-mix(in srgb, var(--c) 9%, var(--bg-2));
             border-bottom: 1px solid var(--border);
         }
         .pillar-head .dot {
-            width: 11px; height: 11px; border-radius: 50%; flex: none;
-            background: var(--c); box-shadow: 0 0 12px var(--c);
+            width: 10px; height: 10px; border-radius: 50%; flex: none;
+            background: var(--c); box-shadow: 0 0 11px var(--c);
         }
         .pillar-head .name {
             font-family: var(--font-head); font-weight: 700;
             letter-spacing: 1.5px; text-transform: uppercase;
             font-size: 1.02rem; color: #fff;
         }
-        .feats { padding: 12px; display: flex; flex-direction: column; gap: 7px; }
+        .pillar-head .count {
+            margin-left: auto;
+            font-family: var(--font-head); font-weight: 600;
+            font-size: 0.72rem; letter-spacing: 1px;
+            color: color-mix(in srgb, var(--c) 78%, #fff);
+            background: color-mix(in srgb, var(--c) 13%, transparent);
+            border: 1px solid color-mix(in srgb, var(--c) 26%, transparent);
+            border-radius: 999px; padding: 2px 8px;
+        }
+        .feats { padding: 11px; display: flex; flex-direction: column; gap: 6px; }
+
+        /* A pillar with far more features than the others would make the whole chart tall and
+           lopsided, which is useless in a screenshot. Such a pillar goes double-width instead and
+           splits its list into two labelled columns, so the chart stays wide and roughly level. */
+        .pillar.wide { width: 506px; }
+        .pillar.wide .feats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 11px;
+            align-items: start;
+        }
+        .col { display: flex; flex-direction: column; gap: 6px; }
         .feat {
             position: relative;
             padding: 9px 11px 9px 26px;
-            background: var(--bg-1);
+            background: rgba(255,255,255,0.028);
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 0.82rem;
@@ -166,8 +196,22 @@
             left: 11px; top: 14px;
             width: 6px; height: 6px; border-radius: 50%;
             background: var(--c);
+            box-shadow: 0 0 7px -1px var(--c);
         }
         .feat b { color: var(--text); font-weight: 600; }
+
+        /* a labelled heading over a column of features */
+        .group {
+            display: flex; align-items: center; gap: 9px;
+            margin: 1px 2px 4px;
+            font-family: var(--font-head); font-weight: 600;
+            font-size: 0.64rem; letter-spacing: 1.6px; text-transform: uppercase;
+            color: color-mix(in srgb, var(--c) 62%, var(--faint));
+        }
+        .group::after {
+            content: ""; flex: 1 1 auto; height: 1px;
+            background: linear-gradient(90deg, color-mix(in srgb, var(--c) 26%, transparent), transparent);
+        }
 
         footer {
             text-align: center;
@@ -195,7 +239,8 @@
                         <!-- AUTOPOT -->
                         <li>
                             <div class="pillar" style="--c: var(--autopot)">
-                                <div class="pillar-head"><span class="dot"></span><span class="name">Autopot</span></div>
+                                <div class="pillar-bar"></div>
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Autopot</span><span class="count">3</span></div>
                                 <div class="feats">
                                     <div class="feat">Controller Support</div>
                                     <div class="feat">Script Engine for light automation</div>
@@ -207,7 +252,8 @@
                         <!-- SMOOTHER -->
                         <li>
                             <div class="pillar" style="--c: var(--smoother)">
-                                <div class="pillar-head"><span class="dot"></span><span class="name">Smoother</span></div>
+                                <div class="pillar-bar"></div>
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Smoother</span><span class="count">8</span></div>
                                 <div class="feats">
                                     <div class="feat">Minimap Reveal</div>
                                     <div class="feat">Zoomout</div>
@@ -223,18 +269,30 @@
 
                         <!-- OVERLAY -->
                         <li>
-                            <div class="pillar" style="--c: var(--overlay)">
-                                <div class="pillar-head"><span class="dot"></span><span class="name">Overlay</span></div>
+                            <div class="pillar wide" style="--c: var(--overlay)">
+                                <div class="pillar-bar"></div>
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Overlay</span><span class="count">14</span></div>
                                 <div class="feats">
-                                    <div class="feat"><b>Preload alert:</b> get notified on map start for your favorite league content</div>
-                                    <div class="feat">Display enemy positions on the minimap</div>
-                                    <div class="feat">Display important locations like Boss-Arenas</div>
-                                    <div class="feat">Get warned if a magic or rare monster is nearby, with an fps-like hit indicator</div>
-                                    <div class="feat">Watch out for specific rare/unique monsters with certain monster mods</div>
-                                    <div class="feat">Atlas nodes marked with icons for specific content <b>(inf range)</b></div>
-                                    <div class="feat">Get specific area information</div>
-                                    <div class="feat">Track your XP per zone and XP per hour</div>
-                                    <div class="feat">See live data so you can set up your rules as you like!</div>
+                                    <div class="col">
+                                        <div class="group">Radar &amp; Alerts</div>
+                                        <div class="feat"><b>Preload alert:</b> get notified on map start for your favorite league content</div>
+                                        <div class="feat">Display enemy positions on the minimap</div>
+                                        <div class="feat">Display important locations like Boss-Arenas</div>
+                                        <div class="feat">Get warned if a magic or rare monster is nearby, with an fps-like hit indicator</div>
+                                        <div class="feat">Watch out for specific rare/unique monsters with certain monster mods</div>
+                                        <div class="feat">Atlas nodes marked with icons for specific content <b>(inf range)</b></div>
+                                        <div class="feat">Get specific area information</div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="group">Tracking &amp; Lua Scripting</div>
+                                        <div class="feat">Track your XP per zone and XP per hour</div>
+                                        <div class="feat">See live data so you can set up your rules as you like!</div>
+                                        <div class="feat"><b>Write your own scripts</b> that react to what the overlay sees</div>
+                                        <div class="feat">Read your buffs live — power, frenzy and endurance charges included</div>
+                                        <div class="feat">Read flask and charm charges, slot by slot</div>
+                                        <div class="feat">One click shows every current value of your character</div>
+                                        <div class="feat">Toast, sound or a box on a monster — your script decides</div>
+                                    </div>
                                 </div>
                             </div>
                         </li>
@@ -242,7 +300,8 @@
                         <!-- TRADEBOT -->
                         <li>
                             <div class="pillar" style="--c: var(--tradebot)">
-                                <div class="pillar-head"><span class="dot"></span><span class="name">Tradebot</span></div>
+                                <div class="pillar-bar"></div>
+                                <div class="pillar-head"><span class="dot"></span><span class="name">Tradebot</span><span class="count">4</span></div>
                                 <div class="feats">
                                     <div class="feat">Instantly buys the item you traveled for</div>
                                     <div class="feat">An additional browser addon does that for you automatically</div>

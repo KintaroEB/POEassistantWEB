@@ -57,6 +57,7 @@
         .page-head p { color: var(--muted); margin: 0; font-size: 1rem; }
         .page-head .back { display: inline-block; margin-top: 14px; font-size: 0.82rem; color: var(--accent-2); text-decoration: none; }
         .page-head .back:hover { color: var(--accent); }
+        .page-head .back + .back { margin-left: 18px; }
 
         .container { max-width: 860px; margin: 0 auto; padding: 8px 22px 0; }
 
@@ -141,9 +142,10 @@
 <body>
     <header class="page-head">
         <div class="brand"><span class="logo">⚡</span> POE Assistant</div>
-        <h1>Scripting Examples</h1>
+        <h1>Overlay POE &mdash; Lua Examples</h1>
         <p>ready-to-use scripts — copy, paste, tweak the numbers at the top</p>
-        <a class="back" href="scripting-api.html">← full POEMEMORY API reference</a>
+        <a class="back" href="index.html">← back to POE Assistant</a>
+        <a class="back" href="scripting-api.html">full POEMEMORY API reference →</a>
     </header>
 
     <div class="container">
@@ -534,6 +536,71 @@ end</pre></div>
         </div>
 
         <div class="ex" style="--ec: var(--danger)">
+            <div class="ex-head"><span class="ex-title">Quicksilver rotation &mdash; PoE1</span><span class="ex-tag input">needs input</span></div>
+            <p class="ex-desc">The classic PoE1 setup: <b>several Quicksilver flasks</b> in the belt, taking turns. Each press goes to a <i>different</i> one, so they refill while the others carry you — and a flask is only pressed when it actually has the charges for a sip.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">WANT</code> (the flask name to rotate), <code class="inl">KEYS</code> (your key per belt slot), <code class="inl">COST</code> (charges one sip costs on your flask), <code class="inl">BUFF</code>, <code class="inl">GAP</code>.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local WANT = "Quicksilver"                -- matched against the flask name
+local KEYS = { "1", "2", "3", "4", "5" }  -- your key for belt slot 1..5
+local COST = 9                            -- charges one sip costs on YOUR flask
+local BUFF = "flask_utility_sprint"       -- the quicksilver buff; "" to skip this check
+local GAP  = 400                          -- ms floor between presses
+
+local last = 0
+local lastSlot = 0        -- the slot we pressed last, so the next press moves on
+
+function tick()
+  if POEMEMORY.Area.InTown then return end
+  if now() - last &lt; GAP then return end
+
+  -- already running? then nothing needs pressing
+  if BUFF ~= "" and POEMEMORY.Player:HasBuff(BUFF) then return end
+
+  -- walk the belt in slot order and find the next usable one after lastSlot
+  local pick, first = nil, nil
+  for _, f in ipairs(POEMEMORY.Player:Flasks()) do
+    if f.Name:find(WANT) and f.Charges &gt;= COST then
+      if first == nil then first = f.Slot end
+      if f.Slot &gt; lastSlot then
+        pick = f.Slot
+        break
+      end
+    end
+  end
+
+  if pick == nil then pick = first end   -- past the last one: wrap to the first
+  if pick == nil then return end         -- none of them has enough charges
+
+  lastSlot = pick
+  last = now()
+  Input.Press(KEYS[pick])
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Why it remembers a slot and not a list position:</b> the list of <i>usable</i> flasks changes between ticks as they drain and refill. Remembering "the second usable one" would jump around; remembering the <b>slot number</b> is stable, so the rotation keeps its order no matter how many are ready.</p>
+            <p class="ex-tune"><b>Set <code class="inl">COST</code> from your own flask.</b> Run the belt-printing script, sip once, and watch how far the number drops. Flask mods change the cost, so a number you measured beats any number a script can guess.</p>
+            <p class="ex-tune"><b>Not sure of the buff id?</b> Open the SCRIPTING tab, press <b>show character current values</b> while the flask is running, and copy the id from the popup. Leave <code class="inl">BUFF</code> empty and the script just rotates on the timer instead.</p>
+        </div>
+
+        <div class="ex" style="--ec: var(--danger)">
+            <div class="ex-head"><span class="ex-title">Keep a utility flask up &mdash; PoE1</span><span class="ex-tag input">needs input</span></div>
+            <p class="ex-desc">For a Basalt, Granite, Jade or any other defensive flask you want running all the time. It presses only when the buff has <b>dropped</b> and the flask has <b>charges</b> — never on a timer, and never into an empty flask.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">SLOT</code> + <code class="inl">KEY</code> (same flask), <code class="inl">BUFF</code>, <code class="inl">COST</code>.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local SLOT = 3
+local KEY  = "3"
+local BUFF = "flask_utility_stone"   -- basalt; verify yours in the popup
+local COST = 10
+local last = 0
+
+function tick()
+  if POEMEMORY.Area.InTown then return end
+  if POEMEMORY.Player:HasBuff(BUFF) then return end            -- still up
+  if POEMEMORY.Player:FlaskCharges(SLOT) &lt; COST then return end -- nothing to spend
+  if now() - last &lt; 600 then return end
+  last = now()
+  Input.Press(KEY)
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>The two guards do different jobs.</b> The buff check stops you re-pressing a flask that is already working. The charge check stops you pressing one that has nothing left — which otherwise fails silently, since a dead keypress looks exactly like a working one.</p>
+        </div>
+
+        <div class="ex" style="--ec: var(--danger)">
             <div class="ex-head"><span class="ex-title">Melee auto-attack nearest</span><span class="ex-tag input">needs input</span></div>
             <p class="ex-desc">Right-click the closest on-screen monster within melee range, once per second. The cursor jumps to the target to aim.</p>
             <p class="ex-tune"><b>Tune:</b> <code class="inl">MELEE</code> (grid range — measure it, see the note below), the <code class="inl">1000</code> ms rate, and the button (<code class="inl">"right"</code>).</p>
@@ -554,7 +621,7 @@ end</pre></div>
     </div>
 
     <footer>
-        POE Assistant · Scripting Examples · <a href="scripting-api.html">API reference</a> · <a href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">Discord</a>
+        POE Assistant · Overlay POE Scripting Examples · <a href="index.html">main site</a> · <a href="scripting-api.html">API reference</a> · <a href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">Discord</a>
     </footer>
 
     <script>

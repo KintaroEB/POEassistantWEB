@@ -149,6 +149,10 @@
             border-bottom-width: 2px; border-radius: 6px; padding: 3px 9px;
         }
 
+        .page-head .back { display: inline-block; margin-top: 14px; font-size: 0.82rem; color: var(--accent-2); text-decoration: none; }
+        .page-head .back:hover { color: var(--accent); }
+        .page-head .back + .back { margin-left: 18px; }
+
         footer { text-align: center; color: var(--faint); font-size: 0.82rem; padding: 34px 22px 50px; }
         footer a { color: var(--accent-2); text-decoration: none; }
         footer a:hover { color: var(--accent); }
@@ -159,8 +163,10 @@
 <body>
     <header class="page-head">
         <div class="brand"><span class="logo">⚡</span> POE Assistant</div>
-        <h1>Scripting API</h1>
+        <h1>Overlay POE &mdash; Lua API</h1>
         <p>everything you can read and do from a Lua script — the <code class="inl">POEMEMORY</code> reference</p>
+        <a class="back" href="index.html">← back to POE Assistant</a>
+        <a class="back" href="scripting-examples.html">ready-made example scripts →</a>
     </header>
 
     <div class="container">
@@ -186,6 +192,7 @@
             <p class="sub">what scripting is, and the one rule that shapes everything</p>
             <p>A script is a small <b>Lua</b> program that runs against your <b>live</b> game data. It reads the game through one read-only object — <code class="inl">POEMEMORY</code> — and reacts: pop a toast, play a sound, draw a box on a monster, or (only if you opt in) press a key or click the mouse.</p>
             <p>Scripts are plain <code class="inl">.lua</code> files in <code class="inl">settings_overlay/scripting/</code>, managed from the <b>SCRIPTING</b> tab in the dashboard (enable/disable, order, edit, live log). Drop a file in the folder or hit <b>+ new</b>.</p>
+            <p><b>This is the Overlay's Lua, not the launcher's AutoHotkey.</b> The assistant launcher has its own, separate scripting system, documented under <i>In-depth Scripting</i> and <i>AI Agent Scripting</i> on the main site. The two share nothing but the word — different language, different data, different abilities. Everything on this page belongs to <b>Overlay POE</b>.</p>
 
             <h3>Four things to know up front</h3>
             <div class="members">
@@ -551,7 +558,7 @@ end</pre>
     </div>
 
     <footer>
-        POE Assistant · Scripting API · <a href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">join the Discord</a>
+        POE Assistant · Overlay POE Scripting API · <a href="index.html">main site</a> · <a href="scripting-examples.html">example scripts</a> · <a href="https://discord.gg/xTXfWVmEBR" target="_blank" rel="noopener noreferrer">join the Discord</a>
     </footer>
 
     <script>

@@ -1102,6 +1102,18 @@
                 </div>
 
                 <div class="tab-group">
+                    <span class="tab-group-label"><i class="fa-solid fa-layer-group"></i> Overlay POE &mdash; Lua Scripting</span>
+                    <div class="tab-row">
+                        <button class="tab tab-lua" data-tab="luaapi" role="tab">
+                            <i class="fa-solid fa-book"></i> Lua API
+                        </button>
+                        <button class="tab tab-lua" data-tab="luaexamples" role="tab">
+                            <i class="fa-solid fa-list-check"></i> Lua Examples
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-group">
                     <span class="tab-group-label"><i class="fa-solid fa-star"></i> Extra</span>
                     <div class="tab-row">
                         <button class="tab tab-extra" data-tab="scripting" role="tab">
@@ -1395,6 +1407,10 @@
                                 <div class="view-desc">live stats for your session and the current zone since the dashboard was opened.</div>
                             </div>
                             <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-code"></i>Scripting</div>
+                                <div class="view-desc">write and run your own lua scripts against what the overlay reads &mdash; buffs, flasks, monsters. see <span class="ui">Lua API</span> and <span class="ui">Lua Examples</span>.</div>
+                            </div>
+                            <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-keyboard"></i>Hotkeys</div>
                                 <div class="view-desc">single-key bindings for overlay actions — changes apply immediately.</div>
                             </div>
@@ -1537,6 +1553,167 @@
             </section>
 
             <!-- ===================== IN-DEPTH SCRIPTING (extra) ===================== -->
+            <!-- ===================== OVERLAY LUA API ===================== -->
+            <section class="panel" id="panel-luaapi" role="tabpanel">
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Overlay POE</span>
+                        <h2 class="section-title"><span class="bar"></span>Lua API</h2>
+                        <p class="tut-intro">the overlay can run your own lua scripts. they read what the overlay already sees &mdash; your character, your buffs, your flasks, the monsters around you &mdash; and act on it.</p>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">this is the overlay, not the launcher</h3>
+                        <p class="tut-text">two different things share the word "scripting" here, and they do not mix. the <span class="ui">In-depth Scripting</span> and <span class="ui">AI Agent Scripting</span> pages under <span class="ui">Extra</span> are for the <b>assistant launcher</b> and are written in autohotkey. this page is the <b>overlay</b>'s own lua, built into the overlay and edited in its dashboard. pick whichever fits what you are trying to do &mdash; they are separate tools with separate abilities.</p>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">getting started</h3>
+                        <ul class="howto-steps">
+                            <li>open the dashboard at <code>localhost:5005</code> and go to the <span class="ui">SCRIPTING</span> view</li>
+                            <li>press <span class="ui">+ new</span>, give the file a name, paste a script and <span class="ui">save</span></li>
+                            <li>toggle the script <b>on</b> &mdash; it starts running immediately, no restart</li>
+                            <li>everything it prints lands in the log right below the editor</li>
+                            <li>press <span class="ui">show character current values</span> to see your own buff ids, pools and flasks &mdash; you need those ids to write anything real</li>
+                        </ul>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">what a script can read</h3>
+                        <p class="tut-text">everything hangs off one object called <code>POEMEMORY</code>. your script writes a function named <code>tick()</code> and the overlay calls it over and over.</p>
+                        <div class="view-list">
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-heart"></i>Player</div>
+                                <div class="view-desc">life, mana, energy shield and rage, plus your name, level and position. each pool gives you current, max and percent.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-bolt"></i>Buffs &amp; charges</div>
+                                <div class="view-desc">everything currently on you, by the game's own id. stack counts for power / frenzy / endurance charges, time left, and whether a buff is permanent.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-flask"></i>Flasks &amp; charms</div>
+                                <div class="view-desc">your belt slot by slot: which flask sits where, its name, and how many charges it holds right now. on poe2 the same belt holds charms too.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-location-dot"></i>Area</div>
+                                <div class="view-desc">the zone you are in &mdash; name, internal code, level, whether it is a map or a town, and a counter that ticks on every zone change.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-skull"></i>World.Monsters</div>
+                                <div class="view-desc">the hostile monsters loaded around you. count them inside a range, take the nearest, read rarity, life and distance, or draw a box on one.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-bell"></i>Actions</div>
+                                <div class="view-desc">toast on screen, play a sound, write to the log, or mark a monster. all harmless &mdash; nothing here touches your character.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-keyboard"></i>Input &amp; Mouse</div>
+                                <div class="view-desc">send a key or a click. <b>off by default</b> &mdash; you have to switch it on yourself, and bind a panic key first.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">a whole script</h3>
+                        <p class="tut-text">this is the shape of every script. one function, called for you, doing one small job.</p>
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>swarm.lua</div>
+<pre class="codeblock">function tick()
+  local n = POEMEMORY.World.Monsters:CountWithin(35)
+  if n &gt;= 10 then
+    notify("swarm: " .. n, "ff5555")
+  end
+end</pre>
+                        </div>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">what it will not do</h3>
+                        <p class="tut-text">the overlay only ever <b>reads</b> the game's memory. it never writes to it, and a script cannot change that. scripts also have no files, no network and no sleep &mdash; a script that hangs is caught and switched off. sending keys and clicks is the one thing that touches the game, so it is off until you turn it on, it only fires while poe is the focused window, it is rate limited, and your panic key stops everything instantly even while alt-tabbed.</p>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">the full reference</h3>
+                        <p class="tut-text">every object, every field, and the traps worth knowing before you hit them. the third link is the same reference as one markdown file &mdash; drop it into your workspace and an ai coding agent can write scripts for you.</p>
+                        <div class="btn-row">
+                            <a class="btn btn-primary" href="scripting-api.html"><i class="fa-solid fa-book"></i> Open the Lua API reference</a>
+                            <a class="btn" href="scripting-examples.html"><i class="fa-solid fa-list-check"></i> Ready-made scripts</a>
+                            <a class="btn" href="OVERLAY_LUA_API.md"><i class="fa-solid fa-robot"></i> Single-file version for AI agents</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== OVERLAY LUA EXAMPLES ===================== -->
+            <section class="panel" id="panel-luaexamples" role="tabpanel">
+                <div class="card tut">
+                    <div class="tut-head">
+                        <span class="eyebrow">Overlay POE</span>
+                        <h2 class="section-title"><span class="bar"></span>Lua Examples</h2>
+                        <p class="tut-intro">finished scripts you can copy, paste and run. each one says what to change at the top, so you never have to read lua to use it.</p>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">how to use them</h3>
+                        <ul class="howto-steps">
+                            <li>open the dashboard's <span class="ui">SCRIPTING</span> view and press <span class="ui">+ new</span></li>
+                            <li>paste the script and <span class="ui">save</span></li>
+                            <li>toggle it <b>on</b></li>
+                            <li>change the values at the top until it behaves the way you want</li>
+                        </ul>
+                        <p class="tut-text">scripts marked <b>no setup</b> only watch and warn &mdash; they never touch your character, so they are safe to try anywhere. scripts marked <b>needs input</b> press keys: switch <span class="ui">input enabled</span> on and bind a <b>panic key</b> first.</p>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">what is in there</h3>
+                        <div class="view-list">
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-bell"></i>Alerts &amp; marks</div>
+                                <div class="view-desc">swarm warnings, a chime when a rare or unique comes close, boxes around dangerous rares, a low-life alarm, an idle detector, a zone announcer.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-bolt"></i>Buffs &amp; charges</div>
+                                <div class="view-desc">print what you are actually buffed with, count your charges, warn when a buff is about to run out, and watch rage on either game.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-flask"></i>Flasks &amp; charms</div>
+                                <div class="view-desc">print your belt, warn when a flask runs low, and find a flask by name so the script survives you rearranging the belt.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-gamepad"></i>Automation</div>
+                                <div class="view-desc">auto life and mana flask, a poe1 quicksilver rotation that takes turns between your flasks, keeping a utility flask up, and a melee auto-attack.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">one to try first</h3>
+                        <p class="tut-text">it presses nothing and changes nothing. it just prints your belt into the log, so you learn your own slot numbers and flask names.</p>
+                        <div class="code-wrap">
+                            <div class="code-head"><span class="dot"></span>belt.lua</div>
+<pre class="codeblock">local last = 0
+
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  for _, f in ipairs(POEMEMORY.Player:Flasks()) do
+    log("[" .. f.Slot .. "] " .. f.Name .. "  " .. f.Charges .. "/" .. f.BaseMax)
+  end
+  log("----")
+end</pre>
+                        </div>
+                    </div>
+
+                    <div class="tut-section">
+                        <h3 class="tut-section-title">all of them</h3>
+                        <div class="btn-row">
+                            <a class="btn btn-primary" href="scripting-examples.html"><i class="fa-solid fa-list-check"></i> Open the example scripts</a>
+                            <a class="btn" href="scripting-api.html"><i class="fa-solid fa-book"></i> Lua API reference</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="panel" id="panel-scripting" role="tabpanel">
                 <div class="card tut">
                     <div class="tut-head">
