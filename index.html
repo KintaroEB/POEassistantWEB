@@ -1364,7 +1364,7 @@
                     <!-- section 2: the views at a glance -->
                     <div class="tut-section">
                         <h3 class="tut-section-title">the dashboard views</h3>
-                        <p class="tut-text">the sidebar groups every tool under <span class="ui">ENTITY DATA</span>. here is what each view does at a glance — deeper guides for the important ones will follow.</p>
+                        <p class="tut-text">the sidebar lists every tool under <span class="ui">POE1 OVERLAY</span> or <span class="ui">POE2 OVERLAY</span>, depending on the game you play. here is what each view does at a glance — deeper guides for the important ones will follow. views marked <span class="ui">poe2 only</span> are hidden while you play poe1.</p>
                         <div class="view-list">
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-satellite-dish"></i>Live Data</div>
@@ -1372,7 +1372,11 @@
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-map"></i>Live Atlas</div>
-                                <div class="view-desc">a live snapshot of the atlas as the overlay reads it, so you can check what it detects on the world map.</div>
+                                <div class="view-desc">a live snapshot of the atlas as the overlay reads it, so you can check what it detects on the world map. <span class="ui">poe2 only</span>.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-wand-magic-sparkles"></i>Live Visual</div>
+                                <div class="view-desc">every visual effect playing near you, named by the game file that draws it. mark a file to see a ring wherever it plays, collect files into custom visual projects that the <span class="ui">GGPX Editor</span> can switch off, and keep a protected list of effects it must never touch.</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-eye-slash"></i>Force Hide</div>
@@ -1380,7 +1384,7 @@
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-eye"></i>Force Show</div>
-                                <div class="view-desc">the opposite of force hide: make specific entities or navmesh matches always draw on the overlay.</div>
+                                <div class="view-desc">the opposite of force hide: make specific entities or navmesh matches always draw on the overlay, with an optional on-screen toast when one comes close. it also tracks dropped uniques you care about and puts a badge on them.</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-gear"></i>Settings</div>
@@ -1388,27 +1392,31 @@
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-bullseye"></i>Threat Indicator</div>
-                                <div class="view-desc">the warning ring drawn around dangerous monsters — ring size and properties for all rarities, with optional per-rarity color overrides.</div>
+                                <div class="view-desc">a ring around your character with arcs pointing at nearby magic, rare and unique monsters, shown while the map is closed — ring size and properties for all rarities, with optional per-rarity color overrides.</div>
                             </div>
                             <div class="view-item">
-                                <div class="view-name"><i class="fa-solid fa-skull"></i>Monster Mod Watcher</div>
-                                <div class="view-desc">a catalog of monster mods you have seen and strict all-of rules that flag dangerous rare combinations; rules and findings are shareable.</div>
+                                <div class="view-name"><i class="fa-solid fa-skull"></i>Monster Watcher</div>
+                                <div class="view-desc">two watchers in one view. <span class="ui">RARE &amp; UNIQUE WATCHER</span>: a catalog of monster mods you have seen and strict all-of rules that flag dangerous rare combinations. <span class="ui">METADATA WATCHER</span>: rules that draw a box on screen, and optionally a dot on the map, over anything whose metadata matches. rules and findings are shareable.</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-map-location-dot"></i>Atlas Nodes</div>
-                                <div class="view-desc">screen-space draw offsets for atlas markers, plus patterns that highlight specific maps, tags or biomes on the atlas.</div>
+                                <div class="view-desc">screen-space draw offsets for atlas markers, plus patterns that highlight specific maps, tags or biomes on the atlas. <span class="ui">poe2 only</span>.</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-location-dot"></i>Zone Info</div>
-                                <div class="view-desc">the current zone with your own notes and a history of the zones you visited this session.</div>
+                                <div class="view-desc">the current zone with your own notes, an on-screen xp tracker, and a history of the zones you visited this session. the <span class="ui">TAB MAP</span> tab draws the whole zone layout on the tab map &mdash; unexplored parts included &mdash; in colors you choose. off by default.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-dungeon"></i>Sekhema Trial</div>
+                                <div class="view-desc">the trial of the sekhemas at a glance: every room on the current floor with its trial and reward, including rooms the map has not revealed yet. flag the afflictions you avoid, and those rooms can get a red cross on the game's selection map. the map also shows each room's trial name and what is still hidden. <span class="ui">poe2 only</span>.</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-chart-simple"></i>Session Stats</div>
-                                <div class="view-desc">live stats for your session and the current zone since the dashboard was opened.</div>
+                                <div class="view-desc">live stats for your session and the current zone. the <span class="ui">MAPS</span> tab counts your map runs and maps per hour; the <span class="ui">SEKHEMA TRIAL</span> tab counts your trial runs (poe2).</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-code"></i>Scripting</div>
-                                <div class="view-desc">write and run your own lua scripts against what the overlay reads &mdash; buffs, flasks, monsters. see <span class="ui">Lua API</span> and <span class="ui">Lua Examples</span>.</div>
+                                <div class="view-desc">write and run your own lua scripts against what the overlay reads &mdash; buffs, flasks, monsters, and on poe2 your skill bar. see <span class="ui">Lua API</span> and <span class="ui">Lua Examples</span>.</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-keyboard"></i>Hotkeys</div>
@@ -1419,8 +1427,8 @@
                                 <div class="view-desc">named config profiles you can switch between instantly, full json export and restore, and a reset back to defaults.</div>
                             </div>
                             <div class="view-item">
-                                <div class="view-name"><i class="fa-solid fa-users"></i>Community</div>
-                                <div class="view-desc">shared preset configs from the community, applied live and auto-backed-up first.</div>
+                                <div class="view-name"><i class="fa-solid fa-users"></i>Community / Follower</div>
+                                <div class="view-desc">shared preset configs from the community, applied live and auto-backed-up first. the <span class="ui">FOLLOW MARKER</span> tab puts a square on one player of your choice, so you can follow a party leader.</div>
                             </div>
                         </div>
                     </div>
@@ -1593,6 +1601,10 @@
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-flask"></i>Flasks &amp; charms</div>
                                 <div class="view-desc">your belt slot by slot: which flask sits where, its name, and how many charges it holds right now. on poe2 the same belt holds charms too.</div>
+                            </div>
+                            <div class="view-item">
+                                <div class="view-name"><i class="fa-solid fa-stopwatch"></i>Skills</div>
+                                <div class="view-desc">your skill bar slot by slot: which skill sits where, and whether it is off cooldown &mdash; also for skills with more than one use. <b>poe2 only</b>.</div>
                             </div>
                             <div class="view-item">
                                 <div class="view-name"><i class="fa-solid fa-location-dot"></i>Area</div>

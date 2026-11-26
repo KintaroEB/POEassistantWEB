@@ -89,10 +89,11 @@ Errors and anything the script logs appear in the log panel under the editor.
 
 The SCRIPTING view has a **show character current values** button. It opens a one-shot
 snapshot of the live character: name, level, area, the four pools, every buff with its id
-and stack count, and the whole flask belt with names and charges.
+and stack count, the whole flask belt with names and charges, and — on PoE2 — the skill bar
+slot by slot, with each skill's id and whether it is ready.
 
-**Tell users to open that first.** Buff ids and belt slots are per-character, and guessing
-them is the single most common reason a script silently does nothing.
+**Tell users to open that first.** Buff ids, belt slots and skill slots are per-character,
+and guessing them is the single most common reason a script silently does nothing.
 
 ---
 
@@ -288,7 +289,66 @@ game's language setting.
 
 ---
 
-## 6. `POEMEMORY.Area`
+## 6. Skills — PoE2 only
+
+Which skill sits in which slot of the skill bar, and whether it is off cooldown. On PoE1
+these calls find no skill bar: `:Skill()` returns nil, `:SkillReady()` returns false and
+`.SkillCount` is 0.
+
+Slots go in **screen order**: 1, 2 and 3 are the top row — left, middle and right mouse
+button. The keyboard row follows, left to right; with the default keys 4 = Q, 5 = E, 6 = R,
+7 = T, 8 = F. Have the user check their own bar in the snapshot popup.
+
+### On `POEMEMORY.Player`
+
+| Call | Returns | Meaning |
+|---|---|---|
+| `:SkillReady(slot)` | bool | the skill in that slot is off cooldown; false for an empty or missing slot |
+| `:Skill(slot)` | handle or nil | the slot; an empty slot is a handle with `.Empty = true`, nil only when the bar has no such slot |
+| `:SkillByKey(key)` | handle or nil | the slot that shows this key, e.g. `"R"` (any case); mouse slots show no key |
+| `.SkillCount` | number | how many slots the bar shows, empty ones included |
+| `:Skills()` | list | the whole bar, in slot order |
+
+### The skill handle
+
+| Member | Type | Meaning |
+|---|---|---|
+| `.Slot` | number | 1–3 the mouse buttons, then the keyboard row |
+| `.Key` | string | the key the slot shows, e.g. `Q`; empty for mouse slots |
+| `.Id` | string | the game's **internal** skill id, not the name on screen (`ShearingBolts` = Ice-Tipped Arrows); empty on an empty slot |
+| `.Empty` | bool | no skill in this slot |
+| `.Ready` | bool | off cooldown; false on an empty slot |
+| `.HasCooldown` | bool | false when the skill has no cooldown at all — then it is always ready |
+| `.Cooling` | number | uses cooling down right now |
+| `.MaxUses` | number | uses before the skill must wait: 1 for most skills, more with a support gem that adds uses; 0 without a cooldown |
+| `.TimeLeft` | number | time until the next use comes back; 0 when nothing is cooling — **cooldown time**, see below |
+| `.Cooldown` | number | base cooldown in seconds; 0 without one |
+| `.CastCount` | number | how many times it was cast; +1 per cast |
+
+The rule: a skill is ready while `.Cooling` is below `.MaxUses`, or when it has no cooldown.
+
+### Three things that will bite you
+
+**`.TimeLeft` counts cooldown time, not seconds on the clock.** With normal cooldown
+recovery the two match. With less recovery (for example a support gem with 50% less
+cooldown recovery) a 12-second cooldown still starts at 12 and counts down at about half
+speed; with more recovery it counts down faster. `.Ready` is always right. **Decide on
+`.Ready`**; use `.TimeLeft` only to show a number.
+
+**Ready means the cooldown, nothing else.** Mana and other costs are not checked. If the
+skill is expensive, check `POEMEMORY.Player.Mana` as well.
+
+**Always guard nil.** The overlay reads the skill bar only while a script asks for it, so
+the first tick or two after a script starts can return nil / false. The same happens while
+the game hides its skill bar. A guarded script simply picks up a moment later.
+
+Pick a skill by its **slot** or its **key**, not by `.Id` — the id is internal and is
+not what the player sees. After the player changes a key in the game options, `.Key` shows
+the new key from the next zone on.
+
+---
+
+## 7. `POEMEMORY.Area`
 
 | Member | Type | Meaning |
 |---|---|---|
@@ -309,7 +369,7 @@ Detect a zone change by remembering `.ChangeCount` and comparing.
 
 ---
 
-## 7. `POEMEMORY.World.Monsters`
+## 8. `POEMEMORY.World.Monsters`
 
 Hostile, **living** monsters inside the loaded network bubble around you. Friendly entities
 and corpses are already filtered out. Distances are in grid units.
@@ -356,7 +416,7 @@ frame-perfect aim. **Always gate on `.OnScreen`.**
 
 ---
 
-## 8. Global actions
+## 9. Global actions
 
 | Call | Effect |
 |---|---|
@@ -370,7 +430,7 @@ calling it every tick is safe and does not spam.
 
 ---
 
-## 9. `Input` and `Mouse` — opt-in
+## 10. `Input` and `Mouse` — opt-in
 
 **Off by default.** Until the user turns on **input enabled** in the SCRIPTING tab, every
 call below is a silent no-op with a one-time log line.
@@ -426,7 +486,7 @@ Unknown names are ignored.
 
 ---
 
-## 10. Worked examples
+## 11. Worked examples
 
 ### Swarm warning — no input
 
@@ -598,6 +658,46 @@ function tick()
 end
 ```
 
+### Skill ready alert, PoE2
+
+```lua
+local KEY = "R"
+local was = nil      -- ready state on the last tick
+
+function tick()
+  local s = POEMEMORY.Player:SkillByKey(KEY)
+  if s == nil then was = nil return end
+  if was == false and s.Ready then
+    notify(KEY .. " ready", "f2c94c")
+  end
+  was = s.Ready
+end
+```
+
+Fires once per cooldown, on the change from cooling to ready — not on every tick.
+
+### Cast a skill when it is ready, PoE2 — needs input
+
+```lua
+local KEY   = "R"     -- the key the slot shows, and the key we press
+local RANGE = 40      -- only with monsters this close (grid units)
+local GAP   = 500     -- ms floor between presses
+local last  = 0
+
+function tick()
+  if POEMEMORY.Area.InTown then return end
+  if now() - last < GAP then return end
+  local s = POEMEMORY.Player:SkillByKey(KEY)
+  if not (s and s.Ready) then return end
+  if POEMEMORY.World.Monsters:CountWithin(RANGE) == 0 then return end
+  last = now()
+  Input.Press(KEY)
+end
+```
+
+Ready does not check mana. For an expensive skill add
+`if POEMEMORY.Player.Mana.Pct < 20 then return end`.
+
 ### Melee auto-attack nearest — needs input
 
 ```lua
@@ -617,7 +717,7 @@ end
 
 ---
 
-## 11. Checklist before handing a script to a user
+## 12. Checklist before handing a script to a user
 
 - [ ] Does it define a global `function tick()`?
 - [ ] Is every repeated action throttled with `now()`? There is no sleep.
@@ -627,6 +727,8 @@ end
       than presented as facts?
 - [ ] For flasks: does it compare `.Charges` against a measured number, instead of trusting
       `.BaseUseCost`?
+- [ ] For skills: is every handle checked for nil, and is the decision made on `.Ready`
+      rather than `.TimeLeft`?
 - [ ] For monsters: is every screen-coordinate use gated on `.OnScreen`?
 - [ ] Does it avoid caching anything across ticks that can change — buff state, flask
       handles, monster handles?
@@ -635,7 +737,7 @@ end
 
 ---
 
-## 12. Common mistakes, in one place
+## 13. Common mistakes, in one place
 
 | Mistake | What happens | Fix |
 |---|---|---|
@@ -649,11 +751,15 @@ end
 | Matching on `Area.Name` | breaks or reads blank | match on `Area.Code` |
 | Caching a flask or monster handle | believable but wrong values | re-read every tick |
 | Using screen coords without `.OnScreen` | clicks into nowhere | gate on `.OnScreen` |
+| Deciding on a skill's `.TimeLeft` | wrong with changed cooldown recovery | decide on `.Ready` |
+| Expecting `.Ready` to include mana | presses with no mana to cast | check `.Mana` as well |
+| Matching a skill by `.Id` as its screen name | never matches | use the slot or `:SkillByKey` |
+| Not guarding a skill handle | error on the first ticks | `if s then ... end` |
 | A `while` loop waiting for something | runaway, script skipped | return early, retry next tick |
 
 ---
 
-## 13. Links
+## 14. Links
 
 - Human-readable API reference: `scripting-api.html`
 - Ready-made example scripts: `scripting-examples.html`

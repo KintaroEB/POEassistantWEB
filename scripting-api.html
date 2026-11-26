@@ -177,6 +177,7 @@
             <a href="#player">Player</a>
             <a href="#buffs">Buffs &amp; charges</a>
             <a href="#flasks">Flasks &amp; charms</a>
+            <a href="#skills">Skills</a>
             <a href="#area">Area</a>
             <a href="#monsters">World.Monsters</a>
             <a href="#handle">Monster handle</a>
@@ -261,6 +262,7 @@ end</pre>
                 <div class="member"><div class="sig"><span class="name">.Life</span> &nbsp; <span class="name">.Mana</span> &nbsp; <span class="name">.Es</span> &nbsp; <span class="name">.Rage</span> <span class="ret">pool</span></div><div class="desc">Vital pools, each with the fields below. <code class="inl">.Es</code> is energy shield. <code class="inl">.Rage</code> works on <b>both games</b> even though they store it differently — see the note under the pool fields.</div></div>
                 <div class="member"><div class="sig"><span class="name">:HasBuff</span><span class="args">(id)</span> &nbsp; <span class="name">:Charges</span><span class="args">(id)</span> &nbsp; <span class="name">:BuffCount</span><span class="args">(id)</span> &nbsp; <span class="name">:Buffs</span><span class="args">()</span></div><div class="desc">What is currently on you, and how many stacks. Full list in <a href="#buffs" style="color:var(--accent-2)">Buffs &amp; charges</a>.</div></div>
                 <div class="member"><div class="sig"><span class="name">:Flask</span><span class="args">(slot)</span> &nbsp; <span class="name">:FlaskCharges</span><span class="args">(slot)</span> &nbsp; <span class="name">.FlaskCount</span> &nbsp; <span class="name">:Flasks</span><span class="args">()</span></div><div class="desc">Your belt, slot by slot. Full list in <a href="#flasks" style="color:var(--accent-2)">Flasks &amp; charms</a>.</div></div>
+                <div class="member"><div class="sig"><span class="name">:SkillReady</span><span class="args">(slot)</span> &nbsp; <span class="name">:Skill</span><span class="args">(slot)</span> &nbsp; <span class="name">:SkillByKey</span><span class="args">(key)</span> &nbsp; <span class="name">.SkillCount</span> &nbsp; <span class="name">:Skills</span><span class="args">()</span></div><div class="desc">Your skill bar, slot by slot, and whether each skill is off cooldown. <b>PoE2 only.</b> Full list in <a href="#skills" style="color:var(--accent-2)">Skills</a>.</div></div>
             </div>
 
             <h3>Each pool (<code class="inl">.Life</code> / <code class="inl">.Mana</code> / <code class="inl">.Es</code> / <code class="inl">.Rage</code>)</h3>
@@ -390,6 +392,72 @@ if f and f.CanUse then notify(f.Name .. " ready", "7ee787") end
 for _, x in ipairs(POEMEMORY.Player:Flasks()) do
   if x.Name:find("Quicksilver") and x.Charges == 0 then notify("quicksilver empty") end
 end</pre>
+        </section>
+
+        <!-- SKILLS -->
+        <section class="card" id="skills" style="--c: #f2c94c">
+            <h2><span class="dot"></span>Skills &mdash; PoE2</h2>
+            <p class="sub">which skill sits in which slot of your skill bar, and whether it is off cooldown</p>
+
+            <div class="note"><span class="lead">Slots go in screen order</span>Slots <b>1</b>, <b>2</b> and <b>3</b> are the top row: left, middle and right mouse button. The keyboard row follows, left to right &mdash; with the default keys <b>4</b> = Q, <b>5</b> = E, <b>6</b> = R, <b>7</b> = T, <b>8</b> = F. Check your own bar once in the popup (see the bottom of this card).</div>
+
+            <div class="note" style="--c:#c792ea"><span class="lead">PoE2 only</span>On PoE1 these calls find no skill bar: <code class="inl">:Skill()</code> returns <code class="inl">nil</code>, <code class="inl">:SkillReady()</code> returns <code class="inl">false</code> and <code class="inl">.SkillCount</code> is <b>0</b>.</div>
+
+            <h3>On <code class="inl">POEMEMORY.Player</code></h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">:SkillReady</span><span class="args">(slot)</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">true</code> when the skill in that slot is off cooldown. <code class="inl">false</code> for an empty slot or a slot your bar does not have. <b>The one you'll use most.</b></div></div>
+                <div class="member"><div class="sig"><span class="name">:Skill</span><span class="args">(slot)</span> <span class="ret">skill | nil</span></div><div class="desc">The slot as a handle (fields below). An empty slot still gives a handle, with <code class="inl">.Empty</code> = <code class="inl">true</code>. <code class="inl">nil</code> only when your bar has no such slot.</div></div>
+                <div class="member"><div class="sig"><span class="name">:SkillByKey</span><span class="args">(key)</span> <span class="ret">skill | nil</span></div><div class="desc">The slot that shows this key, e.g. <code class="inl">"R"</code> (any case). Mouse slots show no key &mdash; use <code class="inl">:Skill(1)</code> to <code class="inl">:Skill(3)</code> for those.</div></div>
+                <div class="member"><div class="sig"><span class="name">.SkillCount</span> <span class="ret">number</span></div><div class="desc">How many slots your bar shows, empty ones included.</div></div>
+                <div class="member"><div class="sig"><span class="name">:Skills</span><span class="args">()</span> <span class="ret">list of skills</span></div><div class="desc">The whole bar in slot order &mdash; loop it with <code class="inl">ipairs</code>.</div></div>
+            </div>
+
+            <h3>The skill handle</h3>
+            <div class="members">
+                <div class="member"><div class="sig"><span class="name">.Slot</span> <span class="ret">number</span></div><div class="desc">The slot: <b>1&ndash;3</b> the mouse buttons, then the keyboard row.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Key</span> <span class="ret">string</span></div><div class="desc">The key the slot shows, e.g. <code class="inl">Q</code>. Empty for mouse slots. After you change a key in the game options, the new key shows from your next zone on.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Id</span> <span class="ret">string</span></div><div class="desc">The game's internal skill id &mdash; <b>not</b> the name on screen. Ice-Tipped Arrows reads <code class="inl">ShearingBolts</code>, Snipe reads <code class="inl">ChannelledSnipe</code>. Empty on an empty slot.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Empty</span> <span class="ret">bool</span></div><div class="desc">No skill in this slot.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Ready</span> <span class="ret">bool</span></div><div class="desc">Off cooldown. Mana and other costs are <b>not</b> checked. <code class="inl">false</code> on an empty slot.</div></div>
+                <div class="member"><div class="sig"><span class="name">.HasCooldown</span> <span class="ret">bool</span></div><div class="desc"><code class="inl">false</code> when the skill has no cooldown at all &mdash; it is then always ready.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Cooling</span> <span class="ret">number</span></div><div class="desc">How many uses are cooling down right now.</div></div>
+                <div class="member"><div class="sig"><span class="name">.MaxUses</span> <span class="ret">number</span></div><div class="desc">How many uses the skill has before it must wait: <b>1</b> for most skills, more when a support gem adds uses. <b>0</b> without a cooldown. The skill is ready while <code class="inl">.Cooling</code> is below this.</div></div>
+                <div class="member"><div class="sig"><span class="name">.TimeLeft</span> <span class="ret">number</span></div><div class="desc">Time until the next use comes back; <b>0</b> when nothing is cooling down. A rough guide only &mdash; see the warning below.</div></div>
+                <div class="member"><div class="sig"><span class="name">.Cooldown</span> <span class="ret">number</span></div><div class="desc">The skill's base cooldown in seconds; <b>0</b> without one.</div></div>
+                <div class="member"><div class="sig"><span class="name">.CastCount</span> <span class="ret">number</span></div><div class="desc">How many times you cast it. Goes up by one per cast.</div></div>
+            </div>
+
+            <div class="note" style="--c:#ff8a94"><span class="lead">⚠ <code class="inl">.TimeLeft</code> counts cooldown time, not seconds on the clock</span>With normal cooldown recovery the two match. With <b>less</b> recovery &mdash; for example a support gem with 50% less cooldown recovery &mdash; a 12-second cooldown still starts at 12 and counts down at about half speed. With more recovery it counts down faster. <code class="inl">.Ready</code> is always right, so make decisions on <code class="inl">.Ready</code> and use <code class="inl">.TimeLeft</code> only to show a number.</div>
+
+            <div class="note"><span class="lead">Ready means the cooldown, nothing else</span>A skill can read ready while you do not have the mana to cast it. If that matters, check <code class="inl">POEMEMORY.Player.Mana</code> yourself.</div>
+
+            <div class="note"><span class="lead">Always check for nil</span>The overlay only reads your skill bar while a script asks for it, so the first tick or two after a script starts can return <code class="inl">nil</code> / <code class="inl">false</code>. The same happens while the game hides its skill bar. Guard every handle, and your script simply picks up a moment later.</div>
+
+            <h3>Seeing your bar</h3>
+            <p style="color:var(--faint);font-size:0.9rem;margin:0 2px 8px">Easiest way: open the dashboard's <b>SCRIPTING</b> tab and press <b>show character current values</b> &mdash; the popup lists every slot with its key, its skill id and whether it is ready. Or print it:</p>
+<pre class="lua">-- print the whole skill bar, once per second
+local last = 0
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  for _, s in ipairs(POEMEMORY.Player:Skills()) do
+    if s.Empty then
+      log("[" .. s.Slot .. "] " .. s.Key .. "  (empty)")
+    else
+      log("[" .. s.Slot .. "] " .. s.Key .. "  " .. s.Id .. "  " .. (s.Ready and "ready" or "cooling"))
+    end
+  end
+  log("----")
+end</pre>
+<pre class="lua">-- the everyday uses
+if POEMEMORY.Player:SkillReady(6) then notify("slot 6 is ready", "f2c94c") end
+
+local r = POEMEMORY.Player:SkillByKey("R")
+if r and not r.Ready then log("R is cooling down") end
+
+-- a skill with two uses: how many are left?
+local t = POEMEMORY.Player:SkillByKey("T")
+if t and t.MaxUses &gt; 1 then log("T: " .. (t.MaxUses - t.Cooling) .. " of " .. t.MaxUses .. " uses left") end</pre>
         </section>
 
         <!-- AREA -->
@@ -552,6 +620,8 @@ end</pre>
                 <div class="member"><div class="sig"><span class="name">Permanent buffs report infinity</span></div><div class="desc"><code class="inl">:BuffTimeLeft</code> returns <code class="inl">math.huge</code> for auras and reservations. Use <code class="inl">.IsPermanent</code> rather than comparing numbers, or your "expiring soon" test will never fire.</div></div>
                 <div class="member"><div class="sig"><span class="name">An endless total does not mean an endless buff</span></div><div class="desc">Frenzy and endurance charges report <code class="inl">.TotalTime</code> as infinity while still counting down for real. Judge permanence from <code class="inl">.TimeLeft</code> or <code class="inl">.IsPermanent</code> — never from the total, or expiring charges will look permanent and sit at 100%.</div></div>
                 <div class="member"><div class="sig"><span class="name">A flask's max and cost are <i>base</i> values</span></div><div class="desc">Only <code class="inl">.Charges</code> knows about your flask's own mods. <code class="inl">.BaseMax</code> and <code class="inl">.BaseUseCost</code> come from shared base-type data, so <code class="inl">.Pct</code> can exceed 100 and <code class="inl">.CanUse</code> can say "no" on a flask that is actually ready. Both err on the safe side, never the risky one.</div></div>
+                <div class="member"><div class="sig"><span class="name">A skill's time left is cooldown time</span></div><div class="desc">With less (or more) cooldown recovery, <code class="inl">.TimeLeft</code> counts down slower (or faster) than the clock. Decide on <code class="inl">.Ready</code>, never on <code class="inl">.TimeLeft</code>.</div></div>
+                <div class="member"><div class="sig"><span class="name">A skill id is not the name on screen</span></div><div class="desc"><code class="inl">.Id</code> is the game's internal id (<code class="inl">ShearingBolts</code> is Ice-Tipped Arrows). Pick a skill by its slot or its key; read the id from the popup if you need it.</div></div>
             </div>
         </section>
 

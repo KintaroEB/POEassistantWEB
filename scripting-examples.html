@@ -476,6 +476,54 @@ end</pre></div>
             <p class="ex-tune" style="margin-top:9px"><b>Playing in another language?</b> Match on <code class="inl">f.BaseId</code> instead — that string never changes with your game language.</p>
         </div>
 
+        <!-- ================= SKILLS ================= -->
+        <div class="cat" style="--cc: #f2c94c"><span class="dot"></span>Skills &mdash; PoE2</div>
+        <p class="cat-sub">no setup — read your skill bar slot by slot: which skill, and whether it is off cooldown</p>
+
+        <div class="note">
+            <span class="lead">Slots go in screen order</span>
+            Slots 1&ndash;3 are the mouse buttons (left, middle, right), then the keyboard row: with the default keys 4 = Q, 5 = E, 6 = R, 7 = T, 8 = F. <b>Ready</b> means off cooldown &mdash; mana is not checked. PoE2 only.
+        </div>
+
+        <div class="ex" style="--ec: #f2c94c">
+            <div class="ex-head"><span class="ex-title">What is on my skill bar?</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">Print every slot with its key, its skill and whether it is ready. Run it once, read the log, then use the slot numbers or keys you saw in your real script.</p>
+            <p class="ex-tune"><b>Faster way:</b> the SCRIPTING tab's <b>show character current values</b> button lists the same thing in a popup, no script needed.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local last = 0
+
+function tick()
+  if now() - last &lt; 1000 then return end
+  last = now()
+  for _, s in ipairs(POEMEMORY.Player:Skills()) do
+    if s.Empty then
+      log("[" .. s.Slot .. "] " .. s.Key .. "  (empty)")
+    else
+      log("[" .. s.Slot .. "] " .. s.Key .. "  " .. s.Id .. "  " .. (s.Ready and "ready" or "cooling"))
+    end
+  end
+  log("----")
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>What you should see:</b> one line per slot. Mouse slots show no key. The name is the game's internal skill id, not the name on screen &mdash; Ice-Tipped Arrows shows as <code class="inl">ShearingBolts</code>.</p>
+        </div>
+
+        <div class="ex" style="--ec: #f2c94c">
+            <div class="ex-head"><span class="ex-title">Skill ready alert</span><span class="ex-tag safe">no setup</span></div>
+            <p class="ex-desc">A toast the moment a skill comes off cooldown &mdash; once per cooldown, not every tick.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">KEY</code> (the key the slot shows). For a mouse slot use <code class="inl">POEMEMORY.Player:Skill(1)</code> to <code class="inl">:Skill(3)</code> instead.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local KEY = "R"
+local was = nil      -- ready state on the last tick
+
+function tick()
+  local s = POEMEMORY.Player:SkillByKey(KEY)
+  if s == nil then was = nil return end
+  if was == false and s.Ready then
+    notify(KEY .. " ready", "f2c94c")
+  end
+  was = s.Ready
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Why it remembers the last state:</b> a skill stays ready for many ticks in a row. Comparing with the last tick fires the toast only on the change from cooling to ready.</p>
+        </div>
+
         <!-- ================= AUTOMATION ================= -->
         <div class="cat" style="--cc: var(--danger)"><span class="dot"></span>Automation</div>
         <p class="cat-sub">these send input — read the box, then flip <b>input enabled</b> on</p>
@@ -598,6 +646,27 @@ function tick()
   Input.Press(KEY)
 end</pre></div>
             <p class="ex-tune" style="margin-top:9px"><b>The two guards do different jobs.</b> The buff check stops you re-pressing a flask that is already working. The charge check stops you pressing one that has nothing left — which otherwise fails silently, since a dead keypress looks exactly like a working one.</p>
+        </div>
+
+        <div class="ex" style="--ec: var(--danger)">
+            <div class="ex-head"><span class="ex-title">Cast a skill when it is ready &mdash; PoE2</span><span class="ex-tag input">needs input</span></div>
+            <p class="ex-desc">Press a cooldown skill's key whenever it is off cooldown and monsters are close. It asks the game whether the skill is ready, so it never presses into a cooldown.</p>
+            <p class="ex-tune"><b>Tune:</b> <code class="inl">KEY</code> (the key the slot shows, and the key that gets pressed), <code class="inl">RANGE</code> (grid units), <code class="inl">GAP</code>.</p>
+            <div class="codewrap"><button class="copy" type="button">copy</button><pre class="lua">local KEY   = "R"     -- the key the slot shows, and the key we press
+local RANGE = 40      -- only with monsters this close (grid units)
+local GAP   = 500     -- ms floor between presses
+local last  = 0
+
+function tick()
+  if POEMEMORY.Area.InTown then return end
+  if now() - last &lt; GAP then return end
+  local s = POEMEMORY.Player:SkillByKey(KEY)
+  if not (s and s.Ready) then return end
+  if POEMEMORY.World.Monsters:CountWithin(RANGE) == 0 then return end
+  last = now()
+  Input.Press(KEY)
+end</pre></div>
+            <p class="ex-tune" style="margin-top:9px"><b>Mana is not checked.</b> Ready only means off cooldown. If the skill is expensive, add a line such as <code class="inl">if POEMEMORY.Player.Mana.Pct &lt; 20 then return end</code>.</p>
         </div>
 
         <div class="ex" style="--ec: var(--danger)">
