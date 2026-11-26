@@ -307,7 +307,7 @@ button. The keyboard row follows, left to right; with the default keys 4 = Q, 5 
 | `:Skill(slot)` | handle or nil | the slot; an empty slot is a handle with `.Empty = true`, nil only when the bar has no such slot |
 | `:SkillByKey(key)` | handle or nil | the slot that shows this key, e.g. `"R"` (any case); mouse slots show no key |
 | `.SkillCount` | number | how many slots the bar shows, empty ones included |
-| `:Skills()` | list | the whole bar, in slot order |
+| `:Skills()` | list | every slot the bar shows, in slot order, empty ones included |
 
 ### The skill handle
 
@@ -327,7 +327,7 @@ button. The keyboard row follows, left to right; with the default keys 4 = Q, 5 
 
 The rule: a skill is ready while `.Cooling` is below `.MaxUses`, or when it has no cooldown.
 
-### Three things that will bite you
+### Four things that will bite you
 
 **`.TimeLeft` counts cooldown time, not seconds on the clock.** With normal cooldown
 recovery the two match. With less recovery (for example a support gem with 50% less
@@ -338,12 +338,19 @@ speed; with more recovery it counts down faster. `.Ready` is always right. **Dec
 **Ready means the cooldown, nothing else.** Mana and other costs are not checked. If the
 skill is expensive, check `POEMEMORY.Player.Mana` as well.
 
-**Always guard nil.** The overlay reads the skill bar only while a script asks for it, so
-the first tick or two after a script starts can return nil / false. The same happens while
-the game hides its skill bar. A guarded script simply picks up a moment later.
+**Read skills every tick.** The overlay reads the skill bar only while a script asks for
+it, and stops about 5 seconds after the last ask. A script that checks skills only every 10
+seconds therefore gets nil every single time. Reading is cheap: read every tick, and
+throttle what you *do*, not what you read.
+
+**Always guard nil.** For the same reason the first tick or two after a script starts can
+return nil / false, and so can every tick while the game hides its skill bar. A guarded
+script simply picks up a moment later.
 
 Pick a skill by its **slot** or its **key**, not by `.Id` — the id is internal and is
-not what the player sees. After the player changes a key in the game options, `.Key` shows
+not what the player sees. To use a skill, press its key with `Input.Press(key)`; for the
+mouse slots click instead — slot 1 `Mouse.Click("left")`, slot 2 `Mouse.Click("middle")`,
+slot 3 `Mouse.Click("right")` (each clicks where the cursor is). After the player changes a key in the game options, `.Key` shows
 the new key from the next zone on.
 
 ---
@@ -727,8 +734,8 @@ end
       than presented as facts?
 - [ ] For flasks: does it compare `.Charges` against a measured number, instead of trusting
       `.BaseUseCost`?
-- [ ] For skills: is every handle checked for nil, and is the decision made on `.Ready`
-      rather than `.TimeLeft`?
+- [ ] For skills: is the skill read every tick (throttle the action, not the read), is
+      every handle checked for nil, and is the decision made on `.Ready`, not `.TimeLeft`?
 - [ ] For monsters: is every screen-coordinate use gated on `.OnScreen`?
 - [ ] Does it avoid caching anything across ticks that can change — buff state, flask
       handles, monster handles?
@@ -755,6 +762,7 @@ end
 | Expecting `.Ready` to include mana | presses with no mana to cast | check `.Mana` as well |
 | Matching a skill by `.Id` as its screen name | never matches | use the slot or `:SkillByKey` |
 | Not guarding a skill handle | error on the first ticks | `if s then ... end` |
+| Reading skills only every few seconds | always nil | read every tick, throttle the action |
 | A `while` loop waiting for something | runaway, script skipped | return early, retry next tick |
 
 ---
@@ -763,6 +771,7 @@ end
 
 - Human-readable API reference: `scripting-api.html`
 - Ready-made example scripts: `scripting-examples.html`
+- Skill scripts, basic to targeting (PoE2): `skill-scripts.html`
 - Project site: <https://github.com/KintaroEB/POEassistantWEB>
 - Discord: <https://discord.gg/xTXfWVmEBR>
 
